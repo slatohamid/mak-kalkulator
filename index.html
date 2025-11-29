@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#050710" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <!-- Ikonica app-ice (napravi kasnije slike u /icons folderu) -->
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <style>
@@ -76,12 +75,9 @@
       border: 1px solid var(--border);
       box-shadow: 0 20px 50px rgba(0,0,0,0.55);
       padding: 18px 16px 16px;
+      margin-bottom: 20px;
     }
-    .card h2 {
-      margin-top: 0;
-      margin-bottom: 4px;
-      font-size: 18px;
-    }
+    .card h2 { margin: 0 0 4px; font-size: 18px; }
     .card p.desc {
       margin: 0 0 10px;
       font-size: 13px;
@@ -124,7 +120,7 @@
       font-weight: 600;
       cursor: pointer;
     }
-    button:hover { opacity: 0.95; }
+    button:hover { opacity: .95; }
     .results {
       margin-top: 16px;
       border-top: 1px solid #262a40;
@@ -134,7 +130,6 @@
     .row {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
       margin-bottom: 4px;
     }
     .row span.label { color: var(--text-muted); }
@@ -156,7 +151,6 @@
       margin-bottom: 6px;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-main);
     }
     .note {
       margin-top: 8px;
@@ -164,11 +158,7 @@
       color: var(--text-muted);
       line-height: 1.5;
     }
-    .warning {
-      color: var(--error);
-      font-size: 11px;
-      margin-top: 4px;
-    }
+    .warning { color: var(--error); font-size: 11px; }
     @media (min-width: 720px) {
       .grid-2 {
         display: grid;
@@ -178,229 +168,249 @@
     }
   </style>
 </head>
+
 <body>
-  <div class="wrapper">
-    <h1>MAK Vision – Kalkulator cijena</h1>
-    <div class="subtitle">
-      Softver logika: <b>x2 → Marge → Remise → TVA</b> • NETO profit = NETO prodaja − NETO nabavna
-    </div>
+<div class="wrapper">
+  <h1>MAK Vision – Kalkulator cijena</h1>
+  <div class="subtitle">Softver logika: <b>x2 → Marge → Remise → TVA</b></div>
 
-    <div class="tabs">
-      <button class="tab active" data-tab="forward">Softver kalkulator</button>
-      <button class="tab" data-tab="target">Željena zarada ➜ Marge</button>
-    </div>
-
-    <!-- TAB 1: Forward -->
-    <div class="card tab-panel" id="tab-forward">
-      <span class="badge">Kalkulator 1</span>
-      <h2>Softver kalkulator (naprijed)</h2>
-      <p class="desc">
-        Unesi nabavnu NETO, Marge i Remise – dobit ćeš neto cijenu, cijenu sa TVA, čistu zaradu i efektivnu maržu.
-      </p>
-
-      <div class="grid-2">
-        <div>
-          <label>Nabavna NETO (bez TVA)</label>
-          <div class="hint">Format: 1.188,12 (tačka = hiljade, zarez = decimale)</div>
-          <input id="f_cost" type="text" placeholder="npr. 1.188,12">
-
-          <label>Marge %</label>
-          <input id="f_marge" type="text" placeholder="npr. 10">
-
-          <label>Remise %</label>
-          <input id="f_remise" type="text" value="0">
-
-          <label>Remise 2 %</label>
-          <input id="f_remise2" type="text" value="0">
-
-          <label>Remise 3 %</label>
-          <input id="f_remise3" type="text" value="0">
-
-          <label>TVA %</label>
-          <input id="f_tva" type="text" value="6">
-
-          <button onclick="calcForward()">Izračunaj</button>
-        </div>
-
-        <div id="forward_out" style="display:none;" class="results">
-          <div class="section-title">NETO cijene</div>
-          <div class="row"><span class="label">Osnovna cijena (×2):</span><span class="value" id="f_base"></span></div>
-          <div class="row"><span class="label">Nakon Marge:</span><span class="value" id="f_afterMarge"></span></div>
-          <div class="row"><span class="label">Nakon svih Remise:</span><span class="value" id="f_net"></span></div>
-
-          <div class="section-title">BRUTO cijena</div>
-          <div class="row"><span class="label">Prodajna BRUTO (sa TVA):</span><span class="value" id="f_gross"></span></div>
-
-          <div class="section-title">Profit</div>
-          <div class="row"><span class="label">Čista NETO zarada:</span><span class="value" id="f_profit"></span></div>
-          <div class="row"><span class="label">Efektivna marža na NETO nabavnu:</span><span class="value" id="f_effMargin"></span></div>
-
-          <p class="note">
-            Osnovna = P × 2 • Nakon Marge = Osnovna × (1 + M%) • Nakon Remise = × (1 − R1) × (1 − R2) × (1 − R3)<br>
-            Profit NETO = Neto prodaja − Nabavna NETO.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 2: Target profit -> required margin -->
-    <div class="card tab-panel" id="tab-target" style="display:none;">
-      <span class="badge">Kalkulator 2</span>
-      <h2>Željena NETO zarada ➜ potrebna Marge</h2>
-      <p class="desc">
-        Unesi nabavnu NETO, koliko želiš da zaradiš NETO i Remise koji koristiš. Kalkulator računa koju Marge trebaš
-        upisati, plus TVA tokove.
-      </p>
-
-      <div class="grid-2">
-        <div>
-          <label>Nabavna NETO (bez TVA)</label>
-          <div class="hint">npr. 512,50</div>
-          <input id="t_cost" type="text" placeholder="npr. 512,50">
-
-          <label>Željena NETO zarada (čista zarada)</label>
-          <input id="t_profit" type="text" placeholder="npr. 300,00">
-
-          <label>Remise % (popust koji želiš koristiti)</label>
-          <input id="t_remise" type="text" placeholder="npr. 10">
-
-          <label>TVA % (prodaja)</label>
-          <input id="t_tva" type="text" value="6">
-
-          <button onclick="calcTarget()">Izračunaj potrebnu Marge</button>
-        </div>
-
-        <div id="target_out" style="display:none;" class="results">
-          <div class="section-title">Ciljna cijena</div>
-          <div class="row"><span class="label">Potrebna NETO prodajna cijena:</span><span class="value" id="t_priceNet"></span></div>
-          <div class="row"><span class="label">Osnovna cijena (×2):</span><span class="value" id="t_base"></span></div>
-          <div class="row"><span class="label">Potrebna Marge %:</span><span class="value" id="t_margeNeed"></span></div>
-
-          <div class="section-title">Cijena sa TVA</div>
-          <div class="row"><span class="label">Prodajna BRUTO (sa TVA):</span><span class="value" id="t_priceGross"></span></div>
-
-          <div class="section-title">TVA tokovi (informativno)</div>
-          <div class="row"><span class="label">Ulazni TVA (21% na nabavnu):</span><span class="value" id="t_vatIn"></span></div>
-          <div class="row"><span class="label">Izlazni TVA (na prodaju):</span><span class="value" id="t_vatOut"></span></div>
-          <div class="row"><span class="label">Razlika TVA (povrat od države):</span><span class="value" id="t_vatDiff"></span></div>
-
-          <p class="note">
-            Profit NETO = Neto prodaja − Neto nabavna. TVA nije zarada – ovdje je prikazan samo tok novca.
-          </p>
-          <p class="warning" id="t_warn" style="display:none;">
-            Napomena: izračunata Marge je bila negativna – softver realno dozvoljava minimalno 0%.
-            Prikazana vrijednost je ograničena na 0%.
-          </p>
-        </div>
-      </div>
-    </div>
-
+  <div class="tabs">
+    <button class="tab active" data-tab="forward">Softver kalkulator</button>
+    <button class="tab" data-tab="target">Željena zarada → Marge</button>
+    <button class="tab" data-tab="percent">Brzi procenti</button>
   </div>
 
-  <script>
-    function parseNum(v) {
-      if (!v) return NaN;
-      return parseFloat(v.toString().trim().replace(/\./g,'').replace(',', '.'));
-    }
-    function euro(n) {
-      return n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
-    }
+  <!-- TAB 1: Softver -->
+  <div class="card tab-panel" id="tab-forward">
+    <span class="badge">Kalkulator 1</span>
+    <h2>Softver kalkulator</h2>
 
-    // Tabs
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const target = tab.getAttribute('data-tab');
-        document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
-        document.getElementById('tab-' + target).style.display = 'block';
-      });
-    });
+    <div class="grid-2">
+      <div>
+        <label>Nabavna NETO</label>
+        <input id="f_cost" type="text">
 
-    // Kalkulator 1
-    function calcForward() {
-      const P = parseNum(document.getElementById('f_cost').value);
-      const M = parseNum(document.getElementById('f_marge').value) / 100 || 0;
-      const R1 = parseNum(document.getElementById('f_remise').value) / 100 || 0;
-      const R2 = parseNum(document.getElementById('f_remise2').value) / 100 || 0;
-      const R3 = parseNum(document.getElementById('f_remise3').value) / 100 || 0;
-      const T = parseNum(document.getElementById('f_tva').value) / 100 || 0;
+        <label>Marge %</label>
+        <input id="f_marge" type="text">
 
-      if (!isFinite(P) || P <= 0) {
-        alert('Unesi ispravnu nabavnu NETO cijenu.');
-        return;
-      }
+        <label>Remise %</label>
+        <input id="f_remise" type="text" value="0">
 
-      const base = P * 2;
-      const afterMarge = base * (1 + M);
-      const net = afterMarge * (1 - R1) * (1 - R2) * (1 - R3);
-      const gross = net * (1 + T);
-      const profit = net - P;
-      const effMargin = (profit / P) * 100;
+        <label>Remise 2 %</label>
+        <input id="f_remise2" type="text" value="0">
 
-      document.getElementById('f_base').textContent = euro(base);
-      document.getElementById('f_afterMarge').textContent = euro(afterMarge);
-      document.getElementById('f_net').textContent = euro(net);
-      document.getElementById('f_gross').textContent = euro(gross);
-      document.getElementById('f_profit').textContent = euro(profit);
-      document.getElementById('f_effMargin').textContent =
-        effMargin.toFixed(2).replace('.', ',') + ' %';
+        <label>Remise 3 %</label>
+        <input id="f_remise3" type="text" value="0">
 
-      document.getElementById('forward_out').style.display = 'block';
-    }
+        <label>TVA %</label>
+        <input id="f_tva" type="text" value="6">
 
-    // Kalkulator 2
-    function calcTarget() {
-      const P = parseNum(document.getElementById('t_cost').value);
-      const Z = parseNum(document.getElementById('t_profit').value);
-      const R = parseNum(document.getElementById('t_remise').value) / 100 || 0;
-      const T = parseNum(document.getElementById('t_tva').value) / 100 || 0;
+        <button onclick="calcForward()">Izračunaj</button>
+      </div>
 
-      if (!isFinite(P) || !isFinite(Z) || P <= 0 || Z <= 0) {
-        alert('Unesi ispravnu nabavnu i željenu NETO zaradu.');
-        return;
-      }
+      <div id="forward_out" style="display:none;" class="results">
+        <div class="row"><span class="label">Osnovna (×2):</span><span class="value" id="f_base"></span></div>
+        <div class="row"><span class="label">Nakon Marge:</span><span class="value" id="f_afterMarge"></span></div>
+        <div class="row"><span class="label">Nakon Remise:</span><span class="value" id="f_net"></span></div>
+        <div class="row"><span class="label">BRUTO (sa TVA):</span><span class="value" id="f_gross"></span></div>
+        <div class="row"><span class="label">NETO profit:</span><span class="value" id="f_profit"></span></div>
+        <div class="row"><span class="label">Efektivna marža:</span><span class="value" id="f_effMargin"></span></div>
+      </div>
+    </div>
+  </div>
 
-      const priceNet = P + Z;
-      const priceM = priceNet / (1 - R);
-      const base = P * 2;
+  <!-- TAB 2: Zarada → Marge -->
+  <div class="card tab-panel" id="tab-target" style="display:none;">
+    <span class="badge">Kalkulator 2</span>
+    <h2>Željena zarada → potrebna Marge</h2>
 
-      let M = (priceM / base) - 1;
-      let negative = false;
-      if (M < 0) {
-        M = 0;
-        negative = true;
-      }
+    <div class="grid-2">
+      <div>
+        <label>Nabavna NETO</label>
+        <input id="t_cost" type="text">
 
-      const priceGross = priceNet * (1 + T);
+        <label>Željena NETO zarada</label>
+        <input id="t_profit" type="text">
 
-      const vatIn = P * 0.21;
-      const vatOut = priceNet * T;
-      const vatDiff = vatIn - vatOut;
+        <label>Remise %</label>
+        <input id="t_remise" type="text">
 
-      document.getElementById('t_priceNet').textContent = euro(priceNet);
-      document.getElementById('t_base').textContent = euro(base);
-      document.getElementById('t_margeNeed').textContent =
-        (M * 100).toFixed(2).replace('.', ',') + ' %';
+        <label>TVA %</label>
+        <input id="t_tva" type="text" value="6">
 
-      document.getElementById('t_priceGross').textContent = euro(priceGross);
-      document.getElementById('t_vatIn').textContent = euro(vatIn);
-      document.getElementById('t_vatOut').textContent = euro(vatOut);
-      document.getElementById('t_vatDiff').textContent = euro(vatDiff);
+        <button onclick="calcTarget()">Izračunaj</button>
+      </div>
 
-      const warn = document.getElementById('t_warn');
-      warn.style.display = negative ? 'block' : 'none';
+      <div id="target_out" style="display:none;" class="results">
+        <div class="row"><span class="label">Potrebna NETO:</span><span class="value" id="t_priceNet"></span></div>
+        <div class="row"><span class="label">Osnovna (x2):</span><span class="value" id="t_base"></span></div>
+        <div class="row"><span class="label">Potrebna Marge %:</span><span class="value" id="t_margeNeed"></span></div>
+        <div class="row"><span class="label">BRUTO cijena:</span><span class="value" id="t_priceGross"></span></div>
 
-      document.getElementById('target_out').style.display = 'block';
-    }
+        <div class="row"><span class="label">TVA 21% (ulaz):</span><span class="value" id="t_vatIn"></span></div>
+        <div class="row"><span class="label">TVA prodaja:</span><span class="value" id="t_vatOut"></span></div>
+        <div class="row"><span class="label">TVA razlika:</span><span class="value" id="t_vatDiff"></span></div>
 
-    // Service worker registracija
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-          .catch(err => console.log('Service worker error', err));
-      });
-    }
-  </script>
+        <p class="warning" id="t_warn" style="display:none;">Marža je bila negativna – softver minimum je 0%</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: procenti -->
+  <div class="card tab-panel" id="tab-percent" style="display:none;">
+    <span class="badge">Kalkulator 3</span>
+    <h2>Brzi procenti</h2>
+
+    <div class="grid-2">
+      <div>
+        <label>Iznos (baza)</label>
+        <input id="p_base" type="text">
+
+        <label>Procenat 1</label>
+        <input id="p_pct1" type="text" value="40">
+
+        <label>Procenat 2</label>
+        <input id="p_pct2" type="text" value="50">
+
+        <label>Procenat 3</label>
+        <input id="p_pct3" type="text" value="10">
+
+        <button onclick="calcPercent()">Izračunaj</button>
+      </div>
+
+      <div id="percent_out" style="display:none;" class="results">
+        <div class="row"><span class="label" id="p_lbl1"></span><span class="value" id="p_val1"></span></div>
+        <div class="row"><span class="label" id="p_lbl2"></span><span class="value" id="p_val2"></span></div>
+        <div class="row"><span class="label" id="p_lbl3"></span><span class="value" id="p_val3"></span></div>
+        <div class="row"><span class="label">Ukupno:</span><span class="value" id="p_sum"></span></div>
+        <div class="row"><span class="label">Ostatak:</span><span class="value" id="p_rest"></span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+function parseNum(v) {
+  if (!v) return NaN;
+  return parseFloat(v.toString().trim().replace(/\./g,'').replace(',', '.'));
+}
+
+// *PROCENTI SA TAČKOM, ne zarezom*
+function euro(n) {
+  return n.toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
+}
+
+/* TAB switching */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.getAttribute('data-tab');
+    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('tab-' + target).style.display = 'block';
+  });
+});
+
+/* Kalkulator 1 */
+function calcForward() {
+  const P = parseNum(document.getElementById('f_cost').value);
+  const M = parseNum(document.getElementById('f_marge').value) / 100 || 0;
+  const R1 = parseNum(document.getElementById('f_remise').value) / 100 || 0;
+  const R2 = parseNum(document.getElementById('f_remise2').value) / 100 || 0;
+  const R3 = parseNum(document.getElementById('f_remise3').value) / 100 || 0;
+  const T = parseNum(document.getElementById('f_tva').value) / 100 || 0;
+
+  if (!P) return alert("Unesite nabavnu NETO.");
+
+  const base = P * 2;
+  const afterMarge = base * (1 + M);
+  const net = afterMarge * (1 - R1) * (1 - R2) * (1 - R3);
+  const gross = net * (1 + T);
+  const profit = net - P;
+  const effMargin = profit / P * 100;
+
+  f_base.textContent = euro(base);
+  f_afterMarge.textContent = euro(afterMarge);
+  f_net.textContent = euro(net);
+  f_gross.textContent = euro(gross);
+  f_profit.textContent = euro(profit);
+  f_effMargin.textContent = effMargin.toFixed(2).replace('.', '.') + ' %';
+
+  forward_out.style.display = "block";
+}
+
+/* Kalkulator 2 */
+function calcTarget() {
+  const P = parseNum(t_cost.value);
+  const Z = parseNum(t_profit.value);
+  const R = parseNum(t_remise.value) / 100 || 0;
+  const T = parseNum(t_tva.value) / 100 || 0;
+
+  if (!P || !Z) return alert("Unesite ispravne vrijednosti.");
+
+  const priceNet = P + Z;
+  const priceM = priceNet / (1 - R);
+  const base = P * 2;
+
+  let M = priceM / base - 1;
+  let neg = false;
+  if (M < 0) { M = 0; neg = true; }
+
+  const priceGross = priceNet * (1 + T);
+  const vatIn = P * 0.21;
+  const vatOut = priceNet * T;
+  const vatDiff = vatIn - vatOut;
+
+  t_priceNet.textContent = euro(priceNet);
+  t_base.textContent = euro(base);
+  t_margeNeed.textContent = (M * 100).toFixed(2).replace('.', '.') + ' %';
+  t_priceGross.textContent = euro(priceGross);
+  t_vatIn.textContent = euro(vatIn);
+  t_vatOut.textContent = euro(vatOut);
+  t_vatDiff.textContent = euro(vatDiff);
+  document.getElementById('t_warn').style.display = neg ? "block" : "none";
+
+  target_out.style.display = "block";
+}
+
+/* Kalkulator 3 */
+function calcPercent() {
+  const base = parseNum(p_base.value);
+  const pct1 = parseNum(p_pct1.value) || 0;
+  const pct2 = parseNum(p_pct2.value) || 0;
+  const pct3 = parseNum(p_pct3.value) || 0;
+
+  if (!base) return alert("Unesite bazu.");
+
+  const v1 = base * (pct1 / 100);
+  const v2 = base * (pct2 / 100);
+  const v3 = base * (pct3 / 100);
+  const sum = v1 + v2 + v3;
+  const rest = base - sum;
+
+  p_lbl1.textContent = pct1 + "% od baze:";
+  p_lbl2.textContent = pct2 + "% od baze:";
+  p_lbl3.textContent = pct3 + "% od baze:";
+
+  p_val1.textContent = euro(v1);
+  p_val2.textContent = euro(v2);
+  p_val3.textContent = euro(v3);
+  p_sum.textContent = euro(sum);
+  p_rest.textContent = euro(rest);
+
+  percent_out.style.display = "block";
+}
+
+/* Service worker */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js");
+  });
+}
+</script>
+
 </body>
 </html>
