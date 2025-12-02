@@ -178,6 +178,7 @@
     <button class="tab active" data-tab="forward">Softver kalkulator</button>
     <button class="tab" data-tab="target">Željena zarada → Marge</button>
     <button class="tab" data-tab="percent">Brzi procenti</button>
+    <button class="tab" data-tab="netoprofit">Neto zarada iz prodajne cijene</button>
   </div>
 
   <!-- TAB 1: Softver -->
@@ -188,10 +189,10 @@
     <div class="grid-2">
       <div>
         <label>Nabavna NETO</label>
-        <input id="f_cost" type="text">
+        <input id="f_cost" type="text" placeholder="npr. 1.188,12">
 
         <label>Marge %</label>
-        <input id="f_marge" type="text">
+        <input id="f_marge" type="text" placeholder="npr. 10">
 
         <label>Remise %</label>
         <input id="f_remise" type="text" value="0">
@@ -224,7 +225,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: Zarada → Marge (stari stil dizajna) -->
+  <!-- TAB 2: Zarada → Marge (stari stil) -->
   <div class="card tab-panel" id="tab-target" style="display:none;">
     <span class="badge">Kalkulator 2</span>
     <h2>Željena zarada → potrebna Marge</h2>
@@ -235,13 +236,13 @@
     <div class="grid-2">
       <div>
         <label>Nabavna NETO (bez TVA)</label>
-        <input id="t_cost" type="text">
+        <input id="t_cost" type="text" placeholder="npr. 3.000,00">
 
         <label>Željena NETO zarada</label>
-        <input id="t_profit" type="text">
+        <input id="t_profit" type="text" placeholder="npr. 1.500,00">
 
         <label>Remise %</label>
-        <input id="t_remise" type="text">
+        <input id="t_remise" type="text" placeholder="npr. 10">
 
         <label>TVA % prodaja</label>
         <input id="t_tva" type="text" value="6">
@@ -282,7 +283,7 @@
     <div class="grid-2">
       <div>
         <label>Iznos (baza)</label>
-        <input id="p_base" type="text">
+        <input id="p_base" type="text" placeholder="npr. 10.000,00">
 
         <label>Procenat 1</label>
         <input id="p_pct1" type="text" value="40">
@@ -303,6 +304,50 @@
         <div class="row"><span class="label">Ukupno ova 3 procenta:</span><span class="value" id="p_sum"></span></div>
         <div class="row"><span class="label">Ostatak (baza − zbir):</span><span class="value" id="p_rest"></span></div>
       </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: Neto zarada iz prodajne cijene -->
+  <div class="card tab-panel" id="tab-netoprofit" style="display:none;">
+    <span class="badge">Kalkulator 4</span>
+    <h2>Neto zarada + TVA automatski</h2>
+    <p class="desc">
+      Unesi nabavnu NETO (bez 21%), prodajnu BRUTO (sa TVA) i TVA procenat na prodaju.
+      Kalkulator računa prodajnu NETO, NETO zaradu i TVA tokove.
+    </p>
+
+    <div class="grid-2">
+
+      <div>
+        <label>Nabavna NETO (bez TVA 21%)</label>
+        <input id="n_cost" type="text" placeholder="npr. 2.000,00">
+
+        <label>Prodajna BRUTO (sa TVA)</label>
+        <input id="n_brut" type="text" placeholder="npr. 3.000,00">
+
+        <label>Prodajni TVA %</label>
+        <input id="n_tva" type="text" value="6">
+
+        <button onclick="calcNetoProfit()">Izračunaj NETO zaradu</button>
+      </div>
+
+      <div id="neto_out" style="display:none;" class="results">
+        <div class="section-title">Prodajna cijena (NETO)</div>
+        <div class="row"><span class="label">Prodajna NETO:</span><span class="value" id="n_net"></span></div>
+
+        <div class="section-title">Profit</div>
+        <div class="row"><span class="label">NETO profit:</span><span class="value" id="n_profit"></span></div>
+
+        <div class="section-title">TVA tokovi</div>
+        <div class="row"><span class="label">Ulazni TVA (21%):</span><span class="value" id="n_vatin"></span></div>
+        <div class="row"><span class="label">Izlazni TVA (prodaja):</span><span class="value" id="n_vatout"></span></div>
+        <div class="row"><span class="label">Razlika TVA (povrat):</span><span class="value" id="n_vatdiff"></span></div>
+
+        <p class="note">
+          NETO profit = NETO prodaja − NETO nabavna. TVA nije zarada – samo tok novca između tebe i države.
+        </p>
+      </div>
+
     </div>
   </div>
 
@@ -421,6 +466,37 @@ function calcPercent() {
   document.getElementById('p_rest').textContent = euro(rest);
 
   document.getElementById('percent_out').style.display = 'block';
+}
+
+/* Kalkulator 4 – NETO profit iz prodajne cijene */
+function calcNetoProfit() {
+  const P  = parseNum(document.getElementById('n_cost').value);
+  const B  = parseNum(document.getElementById('n_brut').value);
+  const T  = parseNum(document.getElementById('n_tva').value) / 100 || 0;
+
+  if (!P || !B || P <= 0 || B <= 0) {
+    alert("Unesi ispravne vrijednosti.");
+    return;
+  }
+
+  // NETO prodaja (skidanje TVA sa BRUTO cijene)
+  const net = B / (1 + T);
+
+  // NETO profit
+  const profit = net - P;
+
+  // TVA tokovi
+  const vatIn  = P * 0.21;   // ulazni TVA na nabavnu
+  const vatOut = net * T;    // izlazni TVA na prodaju
+  const vatDiff = vatIn - vatOut;
+
+  document.getElementById('n_net').textContent     = euro(net);
+  document.getElementById('n_profit').textContent  = euro(profit);
+  document.getElementById('n_vatin').textContent   = euro(vatIn);
+  document.getElementById('n_vatout').textContent  = euro(vatOut);
+  document.getElementById('n_vatdiff').textContent = euro(vatDiff);
+
+  document.getElementById('neto_out').style.display = 'block';
 }
 
 /* Service worker */
