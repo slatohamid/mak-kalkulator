@@ -166,6 +166,50 @@
         gap: 14px;
       }
     }
+        .topnav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 2px 14px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .nav-link {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #363a55;
+      background: #080b19;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-link.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .nav-link.disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
   </style>
 </head>
 
@@ -178,7 +222,7 @@
     <button class="tab active" data-tab="forward">Softver kalkulator</button>
     <button class="tab" data-tab="target">Željena zarada → Marge</button>
     <button class="tab" data-tab="percent">Brzi procenti</button>
-    <button class="tab" data-tab="netoprofit">Neto zarada iz prodajne cijene</button>
+    <button class="tab" data-tab="netoprofit">Neto zarada</button>
   </div>
 
   <!-- TAB 1: Softver -->
@@ -352,6 +396,15 @@
   </div>
 
 </div>
+  <div class="topnav">
+    <div class="nav-title">MAK Vision – Outils</div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Kalkulatori</a>
+      <a href="bobex.html" class="nav-link">Bobex → Sheets</a>
+      <span class="nav-link disabled" title="Bientôt">CRM (bientôt)</span>
+    </div>
+  </div>
+
 
 <script>
 function parseNum(v) {
