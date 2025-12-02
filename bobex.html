@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MAK Vision – Bobex → Sheets (FR)</title>
+  <meta name="theme-color" content="#050710" />
+  <style>
+    :root {
+      --bg: #050710;
+      --card: #101320;
+      --accent: #ff7b3a;
+      --accent-soft: rgba(255,123,58,0.14);
+      --border: #262a40;
+      --text-main: #f5f5f8;
+      --text-muted: #a3a7c0;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1b2140 0, #050710 45%, #020308 100%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .wrapper {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 20px 14px 40px;
+    }
+    h1 {
+      text-align: center;
+      margin: 6px 0 4px;
+      font-size: 22px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: rgba(6,9,22,0.95);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+      padding: 18px 16px 16px;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+    .card .desc {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255,123,58,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(255,123,58,0.4);
+      margin-bottom: 6px;
+    }
+
+    /* sada je sve ispod sebe, samo kolona */
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 8px;
+    }
+
+    label {
+      display: block;
+      margin: 8px 0 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .help, .hint, .note {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 260px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid #363a55;
+      background: #080b19;
+      color: var(--text-main);
+      resize: vertical;
+      font-family: ui-monospace, Consolas, Menlo, monospace;
+      font-size: 13px;
+    }
+    textarea::placeholder {
+      color: rgba(163, 167, 192, 0.45);
+      font-style: italic;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 13px;
+    }
+    thead th {
+      text-align: left;
+      font-size: 11px;
+      padding: 8px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      position: sticky;
+      top: 0;
+      background: #101320;
+      z-index: 1;
+    }
+    tbody td {
+      padding: 8px;
+      border-bottom: 1px dashed var(--border);
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, #ff7b3a, #ff4b8b);
+      color: #fff;
+    }
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid #363a55;
+      color: var(--text-main);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      border-top: 1px solid #262a40;
+      padding-top: 10px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #363a55;
+      background: rgba(255,123,58,0.08);
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;
+      background: #080b19;
+      border-radius: 6px;
+      border: 1px solid #363a55;
+      padding: 1px 5px;
+      font-size: 11px;
+    }
+    .spacer { flex: 1; }
+
+    .hidden { display: none !important; }
+        .topnav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 2px 14px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .nav-link {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #363a55;
+      background: #080b19;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-link.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .nav-link.disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>MAK Vision – Bobex → Sheets (FR)</h1>
+    <div class="subtitle">
+      Coller → Parser → Copier en TSV pour Google Sheets (colonnes A–M).
+    </div>
+    <div class="topnav">
+      <div class="nav-title">MAK Vision – Outils</div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Kalkulatori</a>
+        <a href="bobex.html" class="nav-link active">Bobex → Sheets</a>
+        <span class="nav-link disabled" title="Bientôt">CRM (bientôt)</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">Outil Bobex</span>
+      <h2>Préparation rapide pour Google Sheets</h2>
+      <p class="desc">
+        Collez les fiches Bobex en dessous, l’outil extrait automatiquement les champs et prépare un tableau prêt à coller dans Google Sheets.
+      </p>
+
+      <div class="stack">
+        <!-- INPUT PANEL -->
+        <section id="panelInput">
+          <label>1) Coller les données brutes</label>
+          <p class="help">
+            Collez brut (un ou plusieurs leads). L’outil segmente par <span class="mono">ID: 1234567</span>.
+          </p>
+          <textarea id="raw" placeholder="Exemple :&#10;07/11/2025&#10;&#10;Châssis, portes et fenêtres&#10;&#10;ID: 9553410&#10;&#10;GIRESS NOAL TANGUE&#10;&#10;0466151674 -&#10;&#10;RUE DE VEEWEYDE 140 -&#10;&#10;1070 Anderlecht&#10;&#10;Bruxelles&#10;&#10;tanguegiress@gmail.com"></textarea>
+
+          <div class="footer-row">
+            <div class="pill">💡 Vous pouvez coller plusieurs fiches à la fois.</div>
+            <div class="spacer"></div>
+            <button id="btnClear" class="btn secondary">Effacer</button>
+            <button id="btnParse" class="btn primary">Parser</button>
+          </div>
+        </section>
+
+        <!-- OUTPUT PANEL -->
+        <section id="panelOutput">
+          <label>2) Vérifier & copier vers Sheets</label>
+          <p class="help">
+            Ordre colonnes (A–M) :<br>
+            <span class="mono">
+              A Date du lead | B RDV Date | C Heure | D Durée (min) | E Nom et prénom | F Téléphone | G Email | H Adresse | I Source | J Statut | K Remarque | L RDV créé | M LEAD_ID
+            </span>
+          </p>
+
+          <div id="empty" class="hint">
+            Rien pour l’instant. Collez au-dessus puis cliquez <b>Parser</b>.
+          </div>
+
+          <table id="tbl" style="display:none;">
+            <thead>
+              <tr>
+                <th>Date du lead</th>
+                <th class="muted">RDV Date</th>
+                <th class="muted">Heure</th>
+                <th>Durée (min)</th>
+                <th>Nom et prénom</th>
+                <th>Téléphone</th>
+                <th>Email</th>
+                <th>Adresse</th>
+                <th>Source</th>
+                <th>Statut</th>
+                <th class="muted">Remarque</th>
+                <th class="muted">RDV créé</th>
+                <th>LEAD_ID</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+
+          <div class="footer-row">
+            <span id="stats" class="pill">0 lignes</span>
+            <span id="hint" class="hint" style="display:none;">
+              Dans Sheets, placez-vous en A1 puis
+              <span class="kbd">Ctrl/Cmd</span>+<span class="kbd">V</span>.
+            </span>
+            <div class="spacer"></div>
+            <span id="copyState" class="note"></span>
+            <button id="btnBack" class="btn secondary hidden">⬅ Retour à l’édition</button>
+            <button id="btnCopy" class="btn secondary" disabled>Copier TSV (A–M)</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ========== PARSER HELPERS ========== */
+const streetWords = ['rue','avenue','av.','chaussée','chaussee','bd','boulevard','place','allée','allee','drève','dreve','sentier','square','impasse','chemin'];
+const reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+const reLeadId = /^ID\s*:\s*(\d{5,})$/i;
+const reDate = /^(\d{1,2})[\/\.\-](\d{1,2})[\/\.\-](\d{2,4})$/;
+const rePostalCity = /^\s*(\d{4})\s+(.+?)\s*$/;
+
+function lower(s){ return String(s||'').toLowerCase(); }
+function preCleanLine(s){
+  return (s||'')
+    .replace(/\u00A0/g,' ')
+    .replace(/[ \t]+/g,' ')
+    .replace(/\s*-\s*$/,'')
+    .trim();
+}
+function clean(s){
+  return String(s||'')
+    .replace(/\u00A0/g,' ')
+    .replace(/[ \t]+/g,' ')
+    .replace(/\s*-\s*$/,'')
+    .trim();
+}
+function fmtDateDDMMYYYY(s){
+  const m = String(s||'').match(reDate);
+  if (!m) return '';
+  let dd = +m[1], mm = +m[2], yyyy = +m[3];
+  if (yyyy < 100) yyyy += 2000;
+  return `${String(dd).padStart(2,'0')}/${String(mm).padStart(2,'0')}/${yyyy}`;
+}
+function isEmail(s){ return reEmail.test(String(s||'').trim()); }
+function digitsCount(s){ return String(s||'').replace(/[^\d]/g,'').length; }
+function pickPhone(lines){
+  let best = '', bestCount = 0;
+  for (const ln of lines){
+    const cnt = digitsCount(ln);
+    if (cnt > bestCount){ bestCount = cnt; best = ln; }
+  }
+  return best || '';
+}
+function normalizePhoneBE(p){
+  const digits = String(p||'').replace(/[^\d+]/g,'');
+  if (!digits) return '';
+  if (digits.startsWith('+')) return digits;
+  if (digits.startsWith('00')) return '+' + digits.slice(2);
+  if (digits.startsWith('32')) return '+32' + digits.slice(2);
+  if (digits.startsWith('0'))  return '+32' + digits.slice(1);
+  return '+' + digits;
+}
+
+/* od sirovog teksta do listi “entryja” (po ID) */
+function splitEntries(raw){
+  const lines = raw.split(/\r?\n/).map(preCleanLine).filter(l => l !== '');
+  if (!lines.length) return [];
+  const chunks = []; let cur = []; let seenId = false;
+  for (const ln of lines){
+    const isId = reLeadId.test(ln);
+    if (isId && seenId && cur.length){ chunks.push(cur.join('\n')); cur = [ln]; }
+    else { cur.push(ln); }
+    if (isId) seenId = true;
+  }
+  if (cur.length) chunks.push(cur.join('\n'));
+  if (!chunks.length) return [lines.join('\n')];
+  return chunks;
+}
+
+/* ========== CORE: EXTRACT ONE ENTRY TO A–M ROW ========== */
+function extract(entryText){
+  const rawLines = String(entryText || '')
+    .split(/\r?\n/)
+    .map(preCleanLine)
+    .filter(l => l !== '');
+
+  // A) Date du lead
+  const leadDate = (() => {
+    const ln = rawLines.find(s => reDate.test(s)) || '';
+    return fmtDateDDMMYYYY(ln);
+  })();
+
+  // M) LEAD_ID
+  const leadId = (() => {
+    for (const s of rawLines) {
+      const m = s.match(reLeadId);
+      if (m) return m[1];
+    }
+    return '';
+  })();
+
+  // G) Email
+  const email = rawLines.find(isEmail) || '';
+
+  // F) Téléphone
+  const phone = normalizePhoneBE(
+    pickPhone(rawLines.filter(s => !isEmail(s) && !reLeadId.test(s) && /\d/.test(s)))
+  );
+
+  // E) Nom et prénom
+  const idIdx = rawLines.findIndex(s => reLeadId.test(s));
+  const searchLines = idIdx >= 0 ? rawLines.slice(idIdx + 1) : rawLines;
+
+  const bannedTokens = [
+    'chassis','châssis','porte','portes','fenetre','fenêtres','fenetres',
+    'menuiserie','devis','travaux','volet','volets','bruxelles','belgique',
+    'belgie','belgië','belgium'
+  ];
+  function looksLikeName(s){
+    if (!s) return false;
+    if (/@|\d/.test(s)) return false;
+    const t = s.trim();
+    if (t.length < 3 || t.length > 64) return false;
+    const low = t.toLowerCase();
+    if (bannedTokens.some(tok => low.includes(tok))) return false;
+    return true;
+  }
+  function nameScore(s){
+    const words = s.trim().split(/\s+/);
+    let score = 0;
+    if (words.length >= 2 && words.length <= 4) score += 4;
+    if (/^[\p{L}\s'\-]+$/u.test(s)) score += 3;
+    if (/[A-Z][a-z]+/.test(s)) score += 1;
+    if (/^[A-Z\s'\-]+$/.test(s)) score += 1;
+    if (s.length >= 8) score += 1;
+    return score;
+  }
+  const name = (() => {
+    const candidates = searchLines.filter(looksLikeName);
+    if (!candidates.length) return '';
+    candidates.sort((a,b) => nameScore(b) - nameScore(a));
+    return candidates[0];
+  })();
+
+  // H) Adresse
+  let street = '';
+  const streetIdx = rawLines.findIndex(s => {
+    const t = lower(s);
+    if (/@/.test(t) || reLeadId.test(t)) return false;
+    if (reDate.test(s)) return false;          // ❌ nećemo datum
+    if (rePostalCity.test(s)) return false;    // ❌ nećemo CP+ville kao “ulicu”
+    if (!/\d+/.test(t)) return false;
+    return streetWords.some(w => t.includes(w));
+  });
+  if (streetIdx >= 0) {
+    street = clean(rawLines[streetIdx]);
+  } else {
+    // fallback: linija sa ciframa, ali ne email, ne ID, ne datum, ne CP+ville
+    const ix = rawLines.findIndex(s => {
+      const t = lower(s);
+      if (/@/.test(t) || reLeadId.test(t)) return false;
+      if (reDate.test(s)) return false;
+      if (rePostalCity.test(s)) return false;
+      if (!/\d+/.test(t)) return false;
+      return true;
+    });
+    if (ix >= 0) street = clean(rawLines[ix]);
+  }
+
+  // CP + ville
+  let postalCity = '';
+  const pcLine = rawLines.find(s => rePostalCity.test(s));
+  if (pcLine){
+    const m = pcLine.match(rePostalCity);
+    if (m){
+      const cp = m[1], town = clean(m[2]);
+      postalCity = `${cp} ${town}`;
+    }
+  }
+
+  // ako nema ulice → adresa = samo CP+ville; važno je da NE ubacimo datum
+  const address = [street, postalCity].filter(Boolean).join(', ');
+
+  // B,C,D,I,J,K,L — default
+  const rdvDate = '';
+  const heure   = '';
+  const duree   = '30';
+  const source  = 'Bobex';
+  const statut  = 'RDV créé';
+  const remarque= '';
+  const rdvCree = '';
+
+  return [
+    leadDate, rdvDate, heure, duree, name, phone, email, address,
+    source, statut, remarque, rdvCree, leadId
+  ];
+}
+
+/* ========== UI GLUE ========== */
+const $raw = document.getElementById('raw');
+const $tbl = document.getElementById('tbl');
+const $tbody = $tbl.querySelector('tbody');
+const $btnParse = document.getElementById('btnParse');
+const $btnCopy = document.getElementById('btnCopy');
+const $btnClear = document.getElementById('btnClear');
+const $btnBack = document.getElementById('btnBack');
+const $copyState = document.getElementById('copyState');
+const $hint = document.getElementById('hint');
+const $empty = document.getElementById('empty');
+const $stats = document.getElementById('stats');
+const $panelInput = document.getElementById('panelInput');
+
+let lastRows = [];
+
+function showInputAndOutput(){
+  $panelInput.classList.remove('hidden');
+  $btnBack.classList.add('hidden');
+}
+
+function showOnlyOutput(){
+  $panelInput.classList.add('hidden');
+  $btnBack.classList.remove('hidden');
+}
+
+function render(rows){
+  $tbody.innerHTML = '';
+  lastRows = rows;
+  const n = rows.length;
+  $stats.textContent = n === 0 ? '0 lignes' : (n === 1 ? '1 ligne' : `${n} lignes`);
+
+  if (!n){
+    $tbl.style.display = 'none';
+    $btnCopy.disabled = true;
+    $hint.style.display = 'none';
+    $empty.style.display = '';
+    showInputAndOutput();
+    return;
+  }
+
+  $empty.style.display = 'none';
+  for (const r of rows){
+    const tr = document.createElement('tr');
+    r.forEach((cell) => {
+      const td = document.createElement('td');
+      td.textContent = cell || '';
+      tr.appendChild(td);
+    });
+    $tbody.appendChild(tr);
+  }
+  $tbl.style.display = '';
+  $btnCopy.disabled = false;
+  $hint.style.display = '';
+  showOnlyOutput();
+}
+
+$btnParse.addEventListener('click', () => {
+  $copyState.textContent = '';
+  const raw = $raw.value || '';
+  if (!raw.trim()){ render([]); return; }
+  const entries = splitEntries(raw);
+  const rows = [];
+  for (const e of entries){
+    const row = extract(e);
+    if (row.some(v => (v||'').trim() !== '')) rows.push(row);
+  }
+  render(rows);
+});
+
+$btnCopy.addEventListener('click', async () => {
+  if (!lastRows.length) return;
+  const esc = s => String(s||'').replace(/\t/g,' ').replace(/\r?\n/g,' ').trim();
+  const tsv = lastRows.map(r => r.map(esc).join('\t')).join('\n');
+  try{
+    await navigator.clipboard.writeText(tsv);
+    $copyState.textContent = '✅ Copié dans le presse-papiers.';
+  }catch(_){
+    const ta = document.createElement('textarea'); ta.value = tsv; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    $copyState.textContent = '✅ Copié.';
+  }
+});
+
+$btnClear.addEventListener('click', () => {
+  $raw.value = '';
+  render([]);
+  $copyState.textContent = '';
+});
+
+$btnBack.addEventListener('click', () => {
+  showInputAndOutput();
+});
+</script>
+</body>
+</html>
