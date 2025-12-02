@@ -209,24 +209,32 @@
       </div>
 
       <div id="forward_out" style="display:none;" class="results">
+        <div class="section-title">NETO cijene</div>
         <div class="row"><span class="label">Osnovna (×2):</span><span class="value" id="f_base"></span></div>
         <div class="row"><span class="label">Nakon Marge:</span><span class="value" id="f_afterMarge"></span></div>
         <div class="row"><span class="label">Nakon Remise:</span><span class="value" id="f_net"></span></div>
-        <div class="row"><span class="label">BRUTO (sa TVA):</span><span class="value" id="f_gross"></span></div>
+
+        <div class="section-title">BRUTO cijena</div>
+        <div class="row"><span class="label">Prodajna BRUTO (sa TVA):</span><span class="value" id="f_gross"></span></div>
+
+        <div class="section-title">Profit</div>
         <div class="row"><span class="label">NETO profit:</span><span class="value" id="f_profit"></span></div>
         <div class="row"><span class="label">Efektivna marža:</span><span class="value" id="f_effMargin"></span></div>
       </div>
     </div>
   </div>
 
-  <!-- TAB 2: Zarada → Marge -->
+  <!-- TAB 2: Zarada → Marge (stari stil dizajna) -->
   <div class="card tab-panel" id="tab-target" style="display:none;">
     <span class="badge">Kalkulator 2</span>
     <h2>Željena zarada → potrebna Marge</h2>
+    <p class="desc">
+      Unesi nabavnu NETO, željenu NETO zaradu i Remise koji koristiš. Rezultat je potrebna Marge, ciljna cijena i TVA tokovi.
+    </p>
 
     <div class="grid-2">
       <div>
-        <label>Nabavna NETO</label>
+        <label>Nabavna NETO (bez TVA)</label>
         <input id="t_cost" type="text">
 
         <label>Željena NETO zarada</label>
@@ -235,31 +243,41 @@
         <label>Remise %</label>
         <input id="t_remise" type="text">
 
-        <label>TVA %</label>
+        <label>TVA % prodaja</label>
         <input id="t_tva" type="text" value="6">
 
-        <button onclick="calcTarget()">Izračunaj</button>
+        <button onclick="calcTarget()">Izračunaj potrebnu Marge</button>
       </div>
 
       <div id="target_out" style="display:none;" class="results">
-        <div class="row"><span class="label">Potrebna NETO:</span><span class="value" id="t_priceNet"></span></div>
-        <div class="row"><span class="label">Osnovna (x2):</span><span class="value" id="t_base"></span></div>
+        <div class="section-title">Ciljna cijena</div>
+        <div class="row"><span class="label">Potrebna NETO prodajna cijena:</span><span class="value" id="t_priceNet"></span></div>
+        <div class="row"><span class="label">Osnovna cijena (×2):</span><span class="value" id="t_base"></span></div>
         <div class="row"><span class="label">Potrebna Marge %:</span><span class="value" id="t_margeNeed"></span></div>
-        <div class="row"><span class="label">BRUTO cijena:</span><span class="value" id="t_priceGross"></span></div>
 
-        <div class="row"><span class="label">TVA 21% (ulaz):</span><span class="value" id="t_vatIn"></span></div>
-        <div class="row"><span class="label">TVA prodaja:</span><span class="value" id="t_vatOut"></span></div>
-        <div class="row"><span class="label">TVA razlika:</span><span class="value" id="t_vatDiff"></span></div>
+        <div class="section-title">Cijena sa TVA</div>
+        <div class="row"><span class="label">Prodajna BRUTO (sa TVA):</span><span class="value" id="t_priceGross"></span></div>
 
-        <p class="warning" id="t_warn" style="display:none;">Marža je bila negativna – softver minimum je 0%</p>
+        <div class="section-title">TVA tokovi (informativno)</div>
+        <div class="row"><span class="label">Ulazni TVA (21% na nabavnu):</span><span class="value" id="t_vatIn"></span></div>
+        <div class="row"><span class="label">Izlazni TVA (na prodaju):</span><span class="value" id="t_vatOut"></span></div>
+        <div class="row"><span class="label">Razlika TVA (povrat od države):</span><span class="value" id="t_vatDiff"></span></div>
+
+        <p class="note">
+          Profit NETO = Neto prodaja − Neto nabavna. TVA nije zarada – ovdje je prikazan samo tok novca.
+        </p>
+        <p class="warning" id="t_warn" style="display:none;">
+          Izračunata Marge je bila negativna – u softveru realno možeš staviti minimalno 0%.
+        </p>
       </div>
     </div>
   </div>
 
-  <!-- TAB 3: procenti -->
+  <!-- TAB 3: Brzi procenti -->
   <div class="card tab-panel" id="tab-percent" style="display:none;">
     <span class="badge">Kalkulator 3</span>
     <h2>Brzi procenti</h2>
+    <p class="desc">Unesi bazu (npr. 10.000) i tri procenta – vidiš odmah koliko je svaki procenat u eurima.</p>
 
     <div class="grid-2">
       <div>
@@ -275,15 +293,15 @@
         <label>Procenat 3</label>
         <input id="p_pct3" type="text" value="10">
 
-        <button onclick="calcPercent()">Izračunaj</button>
+        <button onclick="calcPercent()">Izračunaj procente</button>
       </div>
 
       <div id="percent_out" style="display:none;" class="results">
         <div class="row"><span class="label" id="p_lbl1"></span><span class="value" id="p_val1"></span></div>
         <div class="row"><span class="label" id="p_lbl2"></span><span class="value" id="p_val2"></span></div>
         <div class="row"><span class="label" id="p_lbl3"></span><span class="value" id="p_val3"></span></div>
-        <div class="row"><span class="label">Ukupno:</span><span class="value" id="p_sum"></span></div>
-        <div class="row"><span class="label">Ostatak:</span><span class="value" id="p_rest"></span></div>
+        <div class="row"><span class="label">Ukupno ova 3 procenta:</span><span class="value" id="p_sum"></span></div>
+        <div class="row"><span class="label">Ostatak (baza − zbir):</span><span class="value" id="p_rest"></span></div>
       </div>
     </div>
   </div>
@@ -291,19 +309,17 @@
 </div>
 
 <script>
-
 function parseNum(v) {
   if (!v) return NaN;
   return parseFloat(v.toString().trim().replace(/\./g,'').replace(',', '.'));
 }
 
-// *PROCENTI SA TAČKOM, ne zarezom*
+// format sa TAČKOM
 function euro(n) {
-  return n.toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
+  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
 }
 
-/* TAB switching */
+/* Tabs */
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -316,98 +332,102 @@ document.querySelectorAll('.tab').forEach(tab => {
 
 /* Kalkulator 1 */
 function calcForward() {
-  const P = parseNum(document.getElementById('f_cost').value);
-  const M = parseNum(document.getElementById('f_marge').value) / 100 || 0;
+  const P  = parseNum(document.getElementById('f_cost').value);
+  const M  = parseNum(document.getElementById('f_marge').value)  / 100 || 0;
   const R1 = parseNum(document.getElementById('f_remise').value) / 100 || 0;
-  const R2 = parseNum(document.getElementById('f_remise2').value) / 100 || 0;
-  const R3 = parseNum(document.getElementById('f_remise3').value) / 100 || 0;
-  const T = parseNum(document.getElementById('f_tva').value) / 100 || 0;
+  const R2 = parseNum(document.getElementById('f_remise2').value)/ 100 || 0;
+  const R3 = parseNum(document.getElementById('f_remise3').value)/ 100 || 0;
+  const T  = parseNum(document.getElementById('f_tva').value)    / 100 || 0;
 
-  if (!P) return alert("Unesite nabavnu NETO.");
+  if (!P || P <= 0) { alert('Unesi nabavnu NETO.'); return; }
 
-  const base = P * 2;
+  const base       = P * 2;
   const afterMarge = base * (1 + M);
-  const net = afterMarge * (1 - R1) * (1 - R2) * (1 - R3);
-  const gross = net * (1 + T);
-  const profit = net - P;
-  const effMargin = profit / P * 100;
+  const net        = afterMarge * (1 - R1) * (1 - R2) * (1 - R3);
+  const gross      = net * (1 + T);
+  const profit     = net - P;
+  const effMargin  = (profit / P) * 100;
 
-  f_base.textContent = euro(base);
-  f_afterMarge.textContent = euro(afterMarge);
-  f_net.textContent = euro(net);
-  f_gross.textContent = euro(gross);
-  f_profit.textContent = euro(profit);
-  f_effMargin.textContent = effMargin.toFixed(2).replace('.', '.') + ' %';
+  document.getElementById('f_base').textContent       = euro(base);
+  document.getElementById('f_afterMarge').textContent = euro(afterMarge);
+  document.getElementById('f_net').textContent        = euro(net);
+  document.getElementById('f_gross').textContent      = euro(gross);
+  document.getElementById('f_profit').textContent     = euro(profit);
+  document.getElementById('f_effMargin').textContent  = effMargin.toFixed(2) + ' %';
 
-  forward_out.style.display = "block";
+  document.getElementById('forward_out').style.display = 'block';
 }
 
 /* Kalkulator 2 */
 function calcTarget() {
-  const P = parseNum(t_cost.value);
-  const Z = parseNum(t_profit.value);
-  const R = parseNum(t_remise.value) / 100 || 0;
-  const T = parseNum(t_tva.value) / 100 || 0;
+  const P  = parseNum(document.getElementById('t_cost').value);
+  const Z  = parseNum(document.getElementById('t_profit').value);
+  const R  = parseNum(document.getElementById('t_remise').value) / 100 || 0;
+  const T  = parseNum(document.getElementById('t_tva').value)    / 100 || 0;
 
-  if (!P || !Z) return alert("Unesite ispravne vrijednosti.");
+  if (!P || !Z || P <= 0 || Z <= 0) {
+    alert('Unesi ispravnu nabavnu i željenu zaradu.');
+    return;
+  }
 
-  const priceNet = P + Z;
-  const priceM = priceNet / (1 - R);
-  const base = P * 2;
+  const priceNet  = P + Z;            // ciljna neto prodaja
+  const priceM    = priceNet / (1 - R);
+  const base      = P * 2;
 
   let M = priceM / base - 1;
-  let neg = false;
-  if (M < 0) { M = 0; neg = true; }
+  let negative = false;
+  if (M < 0) { M = 0; negative = true; }
 
   const priceGross = priceNet * (1 + T);
-  const vatIn = P * 0.21;
+  const vatIn  = P * 0.21;
   const vatOut = priceNet * T;
   const vatDiff = vatIn - vatOut;
 
-  t_priceNet.textContent = euro(priceNet);
-  t_base.textContent = euro(base);
-  t_margeNeed.textContent = (M * 100).toFixed(2).replace('.', '.') + ' %';
-  t_priceGross.textContent = euro(priceGross);
-  t_vatIn.textContent = euro(vatIn);
-  t_vatOut.textContent = euro(vatOut);
-  t_vatDiff.textContent = euro(vatDiff);
-  document.getElementById('t_warn').style.display = neg ? "block" : "none";
+  document.getElementById('t_priceNet').textContent   = euro(priceNet);
+  document.getElementById('t_base').textContent       = euro(base);
+  document.getElementById('t_margeNeed').textContent  = (M * 100).toFixed(2) + ' %';
+  document.getElementById('t_priceGross').textContent = euro(priceGross);
+  document.getElementById('t_vatIn').textContent      = euro(vatIn);
+  document.getElementById('t_vatOut').textContent     = euro(vatOut);
+  document.getElementById('t_vatDiff').textContent    = euro(vatDiff);
 
-  target_out.style.display = "block";
+  document.getElementById('t_warn').style.display = negative ? 'block' : 'none';
+  document.getElementById('target_out').style.display = 'block';
 }
 
 /* Kalkulator 3 */
 function calcPercent() {
-  const base = parseNum(p_base.value);
-  const pct1 = parseNum(p_pct1.value) || 0;
-  const pct2 = parseNum(p_pct2.value) || 0;
-  const pct3 = parseNum(p_pct3.value) || 0;
+  const base = parseNum(document.getElementById('p_base').value);
+  const pct1 = parseNum(document.getElementById('p_pct1').value) || 0;
+  const pct2 = parseNum(document.getElementById('p_pct2').value) || 0;
+  const pct3 = parseNum(document.getElementById('p_pct3').value) || 0;
 
-  if (!base) return alert("Unesite bazu.");
+  if (!base || base <= 0) { alert('Unesi bazu.'); return; }
 
   const v1 = base * (pct1 / 100);
   const v2 = base * (pct2 / 100);
   const v3 = base * (pct3 / 100);
-  const sum = v1 + v2 + v3;
+  const sum  = v1 + v2 + v3;
   const rest = base - sum;
 
-  p_lbl1.textContent = pct1 + "% od baze:";
-  p_lbl2.textContent = pct2 + "% od baze:";
-  p_lbl3.textContent = pct3 + "% od baze:";
+  document.getElementById('p_lbl1').textContent = pct1 + ' % od baze:';
+  document.getElementById('p_lbl2').textContent = pct2 + ' % od baze:';
+  document.getElementById('p_lbl3').textContent = pct3 + ' % od baze:';
 
-  p_val1.textContent = euro(v1);
-  p_val2.textContent = euro(v2);
-  p_val3.textContent = euro(v3);
-  p_sum.textContent = euro(sum);
-  p_rest.textContent = euro(rest);
+  document.getElementById('p_val1').textContent = euro(v1);
+  document.getElementById('p_val2').textContent = euro(v2);
+  document.getElementById('p_val3').textContent = euro(v3);
+  document.getElementById('p_sum').textContent  = euro(sum);
+  document.getElementById('p_rest').textContent = euro(rest);
 
-  percent_out.style.display = "block";
+  document.getElementById('percent_out').style.display = 'block';
 }
 
 /* Service worker */
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js");
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .catch(err => console.log('SW error', err));
   });
 }
 </script>
