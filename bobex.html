@@ -460,30 +460,40 @@ function extract(entryText){
     return candidates[0];
   })();
 
+
   // H) Adresse
   let street = '';
   const streetIdx = rawLines.findIndex(s => {
     const t = lower(s);
     if (/@/.test(t) || reLeadId.test(t)) return false;
-    if (reDate.test(s)) return false;          // ❌ nećemo datum
-    if (rePostalCity.test(s)) return false;    // ❌ nećemo CP+ville kao “ulicu”
-    if (!/\d+/.test(t)) return false;
+    if (reDate.test(s)) return false;          // ne datum
+    if (rePostalCity.test(s)) return false;    // ne "1070 Anderlecht"
+    if (!/\d+/.test(t)) return false;          // mora imati broj
+    // ne želimo čistu telefonsku liniju (samo cifre, max neki +)
+    const numDigits = digitsCount(s);
+    const hasLetters = /[a-zA-Z]/.test(s);
+    if (numDigits >= 8 && !hasLetters) return false; // liči na telefon
     return streetWords.some(w => t.includes(w));
   });
+
   if (streetIdx >= 0) {
     street = clean(rawLines[streetIdx]);
   } else {
-    // fallback: linija sa ciframa, ali ne email, ne ID, ne datum, ne CP+ville
+    // fallback: linija sa ciframa, ali ne email, ne ID, ne datum, ne CP+ville, ne telefoni
     const ix = rawLines.findIndex(s => {
       const t = lower(s);
       if (/@/.test(t) || reLeadId.test(t)) return false;
       if (reDate.test(s)) return false;
       if (rePostalCity.test(s)) return false;
       if (!/\d+/.test(t)) return false;
+      const numDigits = digitsCount(s);
+      const hasLetters = /[a-zA-Z]/.test(s);
+      if (numDigits >= 8 && !hasLetters) return false; // opet skip telefona
       return true;
     });
     if (ix >= 0) street = clean(rawLines[ix]);
   }
+
 
   // CP + ville
   let postalCity = '';
