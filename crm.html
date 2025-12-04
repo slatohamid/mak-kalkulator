@@ -6,10 +6,6 @@
   <title>MAK Vision – CRM</title>
   <meta name="theme-color" content="#050710" />
   <style>
-    html, body {
-  overscroll-behavior-x: none;
-  }
-
     :root {
       --bg: #050710;
       --card: #101320;
@@ -20,11 +16,10 @@
       --text-muted: #a3a7c0;
     }
     * { box-sizing: border-box; }
+
     html, body {
       height: 100%;
       margin: 0;
-    }
-    body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, #1b2140 0, #050710 45%, #020308 100%);
       color: var(--text-main);
@@ -41,18 +36,7 @@
     .wrapper {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 16px 14px 10px;
-    }
-
-    h1 {
-      margin: 0 0 4px;
-      font-size: 20px;
-      text-align: left;
-    }
-    .subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
+      padding: 12px 14px 8px;
     }
 
     .topnav {
@@ -60,7 +44,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 6px 0 10px;
+      padding: 6px 0 8px;
       border-bottom: 1px solid var(--border);
     }
     .nav-title {
@@ -94,21 +78,29 @@
       font-weight: 600;
     }
 
-  .sheet-wrap {
-  flex: 1;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
+    h1 {
+      margin: 10px 0 2px;
+      font-size: 18px;
+    }
 
-.sheet-frame {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  flex: 1;
-}
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
 
+    .sheet-wrap {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    .sheet-frame {
+      width: 100%;
+      border: 0;
+      flex: 1;
+      background: #ffffff;
+    }
   </style>
 </head>
 <body>
@@ -123,36 +115,17 @@
         </div>
       </div>
       <h1>CRM – Bobex Leads</h1>
-      <div class="subtitle">
-        Ugrađeni Google Sheets CRM preko cijelog ekrana.
-      </div>
+      <div class="subtitle">Ugrađeni Google Sheets CRM preko cijelog ekrana.</div>
     </header>
 
     <main class="sheet-wrap">
-      <!-- OVDJE STAVI SVOJ GOOGLE SHEETS LINK -->
+      <!-- OVDJE STAVI SVOJ PRAVI SHEETS LINK -->
       <iframe
         class="sheet-frame"
-        src="https://docs.google.com/spreadsheets/d/1j5aIRFkikP6jUqsu9hmmKHFNxtglXkZMuOsDfoUMJIM/edit?usp=sharing"
+        src="https://docs.google.com/spreadsheets/d/TVOJ_SHEET_ID_HERE/edit?rm=minimal"
         allowfullscreen
       ></iframe>
     </main>
   </div>
 </body>
-<script>
-  // Blokiraj back/forward gestove (swipe) na crm.html
-  (function () {
-    if (!window.history || !window.history.pushState) return;
-
-    // Dodaj jedan "lažni" state
-    history.scrollRestoration = "manual";
-    history.pushState(null, "", window.location.href);
-
-    // Kad macOS/Chrome pokuša back (swipe), odmah ga "vratimo" na istu stranicu
-    window.addEventListener("popstate", function () {
-      history.pushState(null, "", window.location.href);
-    });
-  })();
-</script>
-</body>
 </html>
-
