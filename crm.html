@@ -15,18 +15,21 @@
       --text-main: #f5f5f8;
       --text-muted: #a3a7c0;
     }
+
     * { box-sizing: border-box; }
 
     html, body {
       height: 100%;
       margin: 0;
+      overscroll-behavior-x: none; /* da swipe ne ide u history */
+    }
+
+    body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, #1b2140 0, #050710 45%, #020308 100%);
       color: var(--text-main);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      /* važno: ne prosleđuj horizontalni overscroll u history */
-      overscroll-behavior-x: none;
     }
 
     .page {
@@ -38,7 +41,19 @@
     .wrapper {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 12px 14px 8px;
+      padding: 16px 14px 10px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 20px;
+      text-align: left;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
     }
 
     .topnav {
@@ -46,9 +61,10 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 6px 0 8px;
+      padding: 6px 0 10px;
       border-bottom: 1px solid var(--border);
     }
+
     .nav-title {
       font-size: 14px;
       font-weight: 600;
@@ -56,11 +72,13 @@
       text-transform: uppercase;
       color: var(--text-muted);
     }
+
     .nav-links {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
+
     .nav-link {
       font-size: 12px;
       padding: 6px 10px;
@@ -73,6 +91,7 @@
       align-items: center;
       gap: 4px;
     }
+
     .nav-link.active {
       border-color: var(--accent);
       background: var(--accent-soft);
@@ -80,53 +99,22 @@
       font-weight: 600;
     }
 
-    h1 {
-      margin: 10px 0 2px;
-      font-size: 18px;
-    }
-
-    .subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
     .sheet-wrap {
       flex: 1;
+      padding: 0;
+      margin: 0;
       display: flex;
+      flex-direction: column;
       min-height: 0;
     }
 
     .sheet-frame {
       width: 100%;
+      height: 100%;
       border: 0;
       flex: 1;
       background: #ffffff;
     }
-
-    .sheet-footer {
-  padding: 6px 14px 10px;
-  font-size: 12px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-.open-sheet-btn {
-  display: inline-block;
-  margin-top: 4px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid #ff7b3a;
-  color: #ff7b3a;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
-  background: rgba(255,123,58,0.12);
-}
-.open-sheet-btn:hover {
-  background: rgba(255,123,58,0.2);
-}
-
   </style>
 </head>
 <body>
@@ -141,35 +129,23 @@
         </div>
       </div>
       <h1>CRM – Bobex Leads</h1>
-      <div class="subtitle">Ugrađeni Google Sheets CRM preko cijelog ekrana.</div>
+      <div class="subtitle">
+        Ugrađeni Google Sheets CRM preko cijelog ekrana.
+      </div>
     </header>
 
     <main class="sheet-wrap">
-  <!-- READ-ONLY prikaz (publish to web) -->
-  <iframe
-    class="sheet-frame"
-    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRoZ_p-lZyQgnIYj9qWXFpkmUbJziKHpvu9yHr7LVwcjzDdnKLLW_K5bBtAYJ_pSnhpWhA0mALfcPfL/pubhtml?widget=true&headers=false"
-    allowfullscreen
-  ></iframe>
-
-  <!-- Dugme za pravo uređivanje -->
-  <div class="sheet-footer">
-    <p>Ovo je read-only prikaz CRM-a. Za uređivanje i promjenu tabova:</p>
-    <a
-      href="https://docs.google.com/spreadsheets/d/1j5aIRFkikP6jUqsu9hmmKHFNxtglXkZMuOsDfoUMJIM/edit?usp=sharing"
-      target="_blank"
-      rel="noopener"
-      class="open-sheet-btn"
-    >
-      👉 Otvori CRM u Google Sheets (sa tabovima i editovanjem)
-    </a>
-  </div>
-</main>
-
+      <!-- EDITABILNI GOOGLE SHEETS LINK -->
+      <iframe
+        class="sheet-frame"
+        src="https://docs.google.com/spreadsheets/d/1j5aIRFkikP6jUqsu9hmmKHFNxtglXkZMuOsDfoUMJIM/edit?usp=sharing"
+        allowfullscreen
+      ></iframe>
+    </main>
   </div>
 
   <script>
-    // Blokiraj "back/forward" swipe (da te ne vraća na index.html)
+    // Blokiraj back/forward gestove (swipe) na crm.html
     (function () {
       if (!window.history || !window.history.pushState) return;
 
