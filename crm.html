@@ -6,6 +6,10 @@
   <title>MAK Vision – CRM</title>
   <meta name="theme-color" content="#050710" />
   <style>
+    html, body {
+  overscroll-behavior-x: none;
+}
+
     :root {
       --bg: #050710;
       --card: #101320;
@@ -134,4 +138,21 @@
     </main>
   </div>
 </body>
+<script>
+  // Blokiraj back/forward gestove (swipe) na crm.html
+  (function () {
+    if (!window.history || !window.history.pushState) return;
+
+    // Dodaj jedan "lažni" state
+    history.scrollRestoration = "manual";
+    history.pushState(null, "", window.location.href);
+
+    // Kad macOS/Chrome pokuša back (swipe), odmah ga "vratimo" na istu stranicu
+    window.addEventListener("popstate", function () {
+      history.pushState(null, "", window.location.href);
+    });
+  })();
+</script>
+</body>
 </html>
+
