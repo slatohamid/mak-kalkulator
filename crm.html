@@ -103,6 +103,30 @@
       flex: 1;
       background: #ffffff;
     }
+
+    .sheet-footer {
+  padding: 6px 14px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.open-sheet-btn {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #ff7b3a;
+  color: #ff7b3a;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255,123,58,0.12);
+}
+.open-sheet-btn:hover {
+  background: rgba(255,123,58,0.2);
+}
+
   </style>
 </head>
 <body>
@@ -121,26 +145,10 @@
     </header>
 
     <main class="sheet-wrap">
-      <!-- OVDJE STAVI SVOJ PRAVI SHEETS LINK -->
-      <iframe
-        class="sheet-frame"
-        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRoZ_p-lZyQgnIYj9qWXFpkmUbJziKHpvu9yHr7LVwcjzDdnKLLW_K5bBtAYJ_pSnhpWhA0mALfcPfL/pubhtml"
-        allowfullscreen
-      ></iframe>
-      <p style="text-align:center; margin:6px 0 0;">
-  <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRoZ_p-lZyQgnIYj9qWXFpkmUbJziKHpvu9yHr7LVwcjzDdnKLLW_K5bBtAYJ_pSnhpWhA0mALfcPfL/pubhtml"
-     target="_blank"
-     style="color:#ff7b3a; font-size:12px; text-decoration:underline;">
-    👉 Otvori CRM u punom Sheets modu (za uređivanje)
-  </a>
-</p>
-
-    </main>
-    <main class="sheet-wrap">
   <!-- READ-ONLY prikaz (publish to web) -->
   <iframe
     class="sheet-frame"
-    src="https://docs.google.com/spreadsheets/d/E_TVOJ_PUBLISH_LINK/pubhtml?widget=true&headers=false"
+    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRoZ_p-lZyQgnIYj9qWXFpkmUbJziKHpvu9yHr7LVwcjzDdnKLLW_K5bBtAYJ_pSnhpWhA0mALfcPfL/pubhtml?widget=true&headers=false"
     allowfullscreen
   ></iframe>
 
