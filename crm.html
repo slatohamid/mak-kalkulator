@@ -25,6 +25,8 @@
       color: var(--text-main);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      /* važno: ne prosleđuj horizontalni overscroll u history */
+      overscroll-behavior-x: none;
     }
 
     .page {
@@ -127,5 +129,19 @@
       ></iframe>
     </main>
   </div>
+
+  <script>
+    // Blokiraj "back/forward" swipe (da te ne vraća na index.html)
+    (function () {
+      if (!window.history || !window.history.pushState) return;
+
+      history.scrollRestoration = "manual";
+      history.pushState(null, "", window.location.href);
+
+      window.addEventListener("popstate", function () {
+        history.pushState(null, "", window.location.href);
+      });
+    })();
+  </script>
 </body>
 </html>
