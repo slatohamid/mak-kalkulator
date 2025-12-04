@@ -405,6 +405,30 @@
     </div>
   </div>
 
+<script>
+// potpuno blokira swipe back/forward u PWA i Chrome
+window.addEventListener('touchstart', function(e) {
+  // višestruki prsti često aktiviraju swipe
+  if (e.touches.length > 1) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
+window.addEventListener('wheel', function(e) {
+  // macOS wheel+swipe gesture
+  if (e.deltaX !== 0) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
+// najvažnije – blokiramo history back/forward
+window.addEventListener('popstate', function(e) {
+  history.pushState(null, null, document.URL);
+});
+
+// odmah inicijalno:
+history.pushState(null, null, document.URL);
+</script>
 
 <script>
 function parseNum(v) {
