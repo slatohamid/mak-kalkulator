@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bs">
 <head>
   <meta charset="UTF-8" />
   <title>MAK Vision – Kalkulator cijena</title>
@@ -211,19 +211,47 @@
       cursor: default;
     }
 
+
+    /* Osvježeni prikaz kalkulatora */
+    .wrapper { max-width: 1120px; padding-top: 32px; }
+    h1 { font-size: clamp(24px, 4vw, 32px); letter-spacing: -0.04em; }
+    .subtitle { margin: 8px 0 26px; }
+    .tabs { flex-wrap: wrap; overflow: visible; gap: 10px; margin-bottom: 20px; }
+    .tab { margin-top: 0; padding: 12px 16px; min-width: 180px; border-radius: 12px; }
+    .card { padding: 24px; background: rgba(14, 18, 34, 0.97); }
+    .card h2 { font-size: 22px; letter-spacing: -0.02em; }
+    .card p.desc { margin: 8px 0 20px; line-height: 1.6; }
+    label { margin-top: 14px; }
+    input { padding: 12px; border-radius: 12px; font-variant-numeric: tabular-nums; }
+    .row { gap: 16px; padding: 5px 0; align-items: baseline; }
+    .row .value { text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+    .section-title { color: #ff9b66; margin-top: 16px; }
+    .highlight { background: var(--accent-soft); border: 1px solid rgba(255,123,58,.3); padding: 12px; border-radius: 10px; margin: 8px 0; }
+    .highlight .value { color: #ffb78e; }
+    [id$="_bhbComparison"] { padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: #080b19; }
+    [id$="_bhbComparison"] .section-title { margin-top: 0; }
+    .note { line-height: 1.6; }
+    button:not(.tab) { border-radius: 12px; padding: 14px; }
+    @media (min-width: 720px) { .grid-2 { grid-template-columns: 1fr 1fr; gap: 28px; } }
+    @media (max-width: 719px) {
+      .wrapper { padding-top: 20px; }
+      .card { padding: 18px 14px; }
+      .tab { min-width: 0; flex: 1 1 42%; white-space: normal; }
+      .row { font-size: 12px; gap: 10px; }
+      .results { margin-top: 22px; }
+    }
   </style>
 </head>
 
 <body>
 <div class="wrapper">
   <h1>MAK Vision – Kalkulator cijena</h1>
-  <div class="subtitle">Softver logika: <b>x2 → Marge → Remise → TVA</b></div>
+  <div class="subtitle">BHB rabat 53% · <b>Ponude, zarada i posebni popusti</b></div>
 
   <div class="tabs">
     <button class="tab active" data-tab="forward">Softver kalkulator</button>
     <button class="tab" data-tab="target">Željena zarada → Marge</button>
     <button class="tab" data-tab="percent">Brzi procenti</button>
-    <button class="tab" data-tab="discount">Rabat dobavljača</button>
     <button class="tab" data-tab="netoprofit">Neto zarada</button>
   </div>
 
@@ -258,6 +286,10 @@
         <label>Remise 3 %</label>
         <input id="f_remise3" type="text" value="0">
 
+        <label for="f_exceptional">Remise exceptionnelle — NETO (€)</label>
+        <div class="hint">Fiksni popust bez TVA, npr. 300 €. Ako ga nema, ostavi 0.</div>
+        <input id="f_exceptional" type="text" inputmode="decimal" value="0">
+
         <label>TVA %</label>
         <input id="f_tva" type="text" value="6">
 
@@ -268,8 +300,10 @@
         <div class="section-title">NETO cijene</div>
         <div class="row"><span class="label">Osnovna (×2):</span><span class="value" id="f_base"></span></div>
         <div class="row"><span class="label">Nakon Marge:</span><span class="value" id="f_afterMarge"></span></div>
-        <div class="row"><span class="label">Nakon Remise:</span><span class="value" id="f_net"></span></div>
+        <div class="row"><span class="label">Nakon procentualnih Remise:</span><span class="value" id="f_net"></span></div>
 
+        <div class="row"><span class="label">Remise exceptionnelle NETO:</span><span class="value" id="f_exceptionalValue"></span></div>
+        <div class="row"><span class="label">Konačna NETO cijena:</span><span class="value" id="f_finalNet"></span></div>
         <div class="section-title">BRUTO cijena</div>
         <div class="row"><span class="label">Prodajna BRUTO (sa TVA):</span><span class="value" id="f_gross"></span></div>
 
@@ -308,6 +342,10 @@
         <label>Remise %</label>
         <input id="t_remise" type="text" placeholder="npr. 10">
 
+        <label for="t_exceptional">Remise exceptionnelle — NETO (€)</label>
+        <div class="hint">Fiksni popust bez TVA, npr. 300 €. Ako ga nema, ostavi 0.</div>
+        <input id="t_exceptional" type="text" inputmode="decimal" value="0">
+
         <label>TVA % prodaja</label>
         <input id="t_tva" type="text" value="6">
 
@@ -315,7 +353,12 @@
       </div>
 
       <div id="target_out" style="display:none;" class="results">
-        <div class="section-title">Ciljna cijena sada (rabat 53%)</div>
+        <div class="section-title">Cijena za ponudu</div>
+        <div class="row highlight"><span class="label">Upiši NETO prije posebnog popusta:</span><span class="value" id="t_beforeExceptional"></span></div>
+        <div class="row"><span class="label">BRUTO prije posebnog popusta:</span><span class="value" id="t_grossBeforeExceptional"></span></div>
+        <div class="row"><span class="label">Remise exceptionnelle NETO:</span><span class="value" id="t_exceptionalValue"></span></div>
+        <p class="note">Cijena za unos je nakon procentualnog Remise, a prije Remise exceptionnelle. Potrebna Marge uključuje oba popusta da nakon njih ostane željena zarada.</p>
+        <div class="section-title">Nakon svih popusta (rabat 53%)</div>
         <div class="row"><span class="label">Potrebna NETO prodajna cijena:</span><span class="value" id="t_priceNet"></span></div>
         <div class="row"><span class="label">Osnovna cijena (×2):</span><span class="value" id="t_base"></span></div>
         <div class="row"><span class="label">Potrebna Marge %:</span><span class="value" id="t_margeNeed"></span></div>
@@ -324,10 +367,11 @@
         <div class="row"><span class="label">Prodajna BRUTO (sa TVA):</span><span class="value" id="t_priceGross"></span></div>
 
         <div class="section-title">Orijentir prije (rabat 50%)</div>
+        <div class="row"><span class="label">NETO za unos prije (50%):</span><span class="value" id="t_oldBeforeExceptional"></span></div>
         <div class="row"><span class="label">Potrebna Marge prije:</span><span class="value" id="t_oldMarge"></span></div>
         <div class="row"><span class="label">NETO prodajna prije:</span><span class="value" id="t_oldPriceNet"></span></div>
         <div class="row"><span class="label">BRUTO prodajna prije:</span><span class="value" id="t_oldPriceGross"></span></div>
-        <p class="note">Oba slučaja koriste istu željenu zaradu, Remise i TVA. Marge se računa prema nabavnoj u tom slučaju.</p>
+        <p class="note">Oba slučaja koriste istu željenu zaradu, oba popusta i TVA. Marge se računa prema nabavnoj u tom slučaju.</p>
         <p class="warning" id="t_oldWarn" style="display:none;">Potrebna Marge prije je negativna; prikazan je minimum 0%, kao u postojećem obračunu.</p>
 
         <div class="section-title">TVA tokovi (informativno)</div>
@@ -378,41 +422,6 @@
     </div>
   </div>
 
-  <!-- Rabat dobavljača -->
-  <div class="card tab-panel" id="tab-discount" style="display:none;">
-    <span class="badge">Rabat dobavljača</span>
-    <h2>Rabat dobavljača</h2>
-    <p class="desc">Uporedi staru i novu nabavnu cijenu prema rabatu dobavljača.</p>
-
-    <div class="grid-2">
-      <div>
-        <label for="d_catalog">Kataloška cijena (bez TVA)</label>
-        <div class="hint">npr. 10.000,00</div>
-        <input id="d_catalog" type="text" placeholder="npr. 10.000,00">
-
-        <label for="d_oldDiscount">Stari rabat %</label>
-        <input id="d_oldDiscount" type="text" value="50">
-
-        <label for="d_newDiscount">Novi rabat %</label>
-        <input id="d_newDiscount" type="text" value="53">
-
-        <button onclick="calcDiscount()">Izračunaj</button>
-      </div>
-
-      <div id="discount_out" style="display:none;" class="results">
-        <div class="section-title">Nabavne cijene</div>
-        <div class="row"><span class="label">Stara nabavna cijena:</span><span class="value" id="d_oldCost"></span></div>
-        <div class="row"><span class="label">Nova nabavna cijena:</span><span class="value" id="d_newCost"></span></div>
-
-        <div class="section-title">Razlika</div>
-        <div class="row"><span class="label">Ušteda:</span><span class="value" id="d_saving"></span></div>
-        <div class="row"><span class="label">Nova nabavna niža za:</span><span class="value" id="d_reduction"></span></div>
-        <div class="row"><span class="label">Razlika rabata:</span><span class="value" id="d_points"></span></div>
-        <p class="note">Procenat uštede računa se u odnosu na staru nabavnu cijenu. Negativna ušteda znači da je nova nabavna viša. Kada je stara nabavna 0 €, procenat nije definisan.</p>
-      </div>
-    </div>
-  </div>
-
   <!-- TAB 4: Neto zarada iz prodajne cijene -->
   <div class="card tab-panel" id="tab-netoprofit" style="display:none;">
     <span class="badge">Kalkulator 4</span>
@@ -437,8 +446,13 @@
           <p class="note">Za istu katalošku cijenu nova nabavna je 6% niža. Stara nabavna je procjena izvedena iz unesenog iznosa; zaokruživanje BHB stavki može dati malu razliku.</p>
         </div>
 
-        <label>Prodajna BRUTO (sa TVA)</label>
+        <label for="n_brut">Prodajna BRUTO prije Remise exceptionnelle</label>
+        <div class="hint">Unesi cijenu sa TVA nakon procentualnih popusta. Posebni NETO popust skida se u ovom obračunu.</div>
         <input id="n_brut" type="text" placeholder="npr. 3.000,00">
+
+        <label for="n_exceptional">Remise exceptionnelle — NETO (€)</label>
+        <div class="hint">Fiksni popust bez TVA, npr. 300 €. Ako ga nema, ostavi 0.</div>
+        <input id="n_exceptional" type="text" inputmode="decimal" value="0">
 
         <label>Prodajni TVA %</label>
         <input id="n_tva" type="text" value="6">
@@ -447,7 +461,10 @@
       </div>
 
       <div id="neto_out" style="display:none;" class="results">
-        <div class="section-title">Prodajna cijena (NETO)</div>
+        <div class="section-title">Cijena nakon posebnog popusta</div>
+        <div class="row"><span class="label">NETO prije posebnog popusta:</span><span class="value" id="n_beforeExceptional"></span></div>
+        <div class="row"><span class="label">Remise exceptionnelle NETO:</span><span class="value" id="n_exceptionalValue"></span></div>
+        <div class="row highlight"><span class="label">Konačna BRUTO za kupca:</span><span class="value" id="n_finalGross"></span></div>
         <div class="row"><span class="label">Prodajna NETO:</span><span class="value" id="n_net"></span></div>
 
         <div class="section-title">Profit</div>
@@ -455,7 +472,7 @@
 
         <div class="row"><span class="label">NETO profit prije (50%):</span><span class="value" id="n_oldProfit"></span></div>
         <div class="row"><span class="label">Veća zarada sada:</span><span class="value" id="n_profitGain"></span></div>
-        <p class="note">Poređenje zarade koristi istu unesenu prodajnu cijenu u oba slučaja.</p>
+        <p class="note">Poređenje zarade koristi istu prodajnu cijenu i isti posebni popust u oba slučaja.</p>
 
         <div class="section-title">TVA tokovi</div>
         <div class="row"><span class="label">Ulazni TVA (21%):</span><span class="value" id="n_vatin"></span></div>
@@ -471,14 +488,6 @@
   </div>
 
 </div>
-  <div class="topnav">
-    <div class="nav-title">MAK Vision – Outils</div>
-    <div class="nav-links">
-      <a href="index.html" class="nav-link active">Kalkulatori</a>
-      <a href="bobex.html" class="nav-link">Bobex → Sheets</a>
-       <a href="crm.html" class="nav-link">CRM</a>
-    </div>
-  </div>
 
 <script>
 // potpuno blokira swipe back/forward u PWA i Chrome
@@ -513,7 +522,7 @@ function parseNum(v) {
 
 // format sa TAČKOM
 function euro(n) {
-  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
+  return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 }
 
 // BHB unos je već neto nakon rabata 53%; ne skidamo rabat ponovo.
@@ -522,7 +531,7 @@ function bhbOldCost(newCost) {
 }
 
 function bhbEuro(n) {
-  return euro(n).replace(/\.(\d{2}) €$/, ',$1 €');
+  return euro(n);
 }
 
 function showBhbComparison(prefix, value) {
@@ -548,8 +557,22 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
+// Prazan posebni popust znači 0; neispravni iznosi se ne prešute.
+function exceptionalDiscount(prefix) {
+  const value = document.getElementById(prefix + '_exceptional').value.trim();
+  const amount = value === '' ? 0 : parseNum(value);
+  if (!Number.isFinite(amount) || amount < 0) {
+    alert('Remise exceptionnelle mora biti ispravan iznos od 0 € ili više.');
+    return null;
+  }
+  return amount;
+}
+
 /* Kalkulator 1 */
 function calcForward() {
+  document.getElementById('forward_out').style.display = 'none';
+  const exceptional = exceptionalDiscount('f');
+  if (exceptional === null) return;
   const P  = parseNum(document.getElementById('f_cost').value);
   showBhbComparison('f', document.getElementById('f_cost').value);
   const M  = parseNum(document.getElementById('f_marge').value)  / 100 || 0;
@@ -563,13 +586,17 @@ function calcForward() {
   const base       = P * 2;
   const afterMarge = base * (1 + M);
   const net        = afterMarge * (1 - R1) * (1 - R2) * (1 - R3);
-  const gross      = net * (1 + T);
-  const profit     = net - P;
+  if (exceptional > net) { alert('Posebni popust ne može biti veći od NETO prodajne cijene.'); return; }
+  const finalNet   = net - exceptional;
+  const gross      = finalNet * (1 + T);
+  const profit     = finalNet - P;
   const effMargin  = (profit / P) * 100;
 
   document.getElementById('f_base').textContent       = euro(base);
   document.getElementById('f_afterMarge').textContent = euro(afterMarge);
   document.getElementById('f_net').textContent        = euro(net);
+  document.getElementById('f_exceptionalValue').textContent = euro(exceptional);
+  document.getElementById('f_finalNet').textContent = euro(finalNet);
   document.getElementById('f_gross').textContent      = euro(gross);
   document.getElementById('f_profit').textContent     = euro(profit);
   document.getElementById('f_effMargin').textContent  = effMargin.toFixed(2) + ' %';
@@ -579,6 +606,9 @@ function calcForward() {
 
 /* Kalkulator 2 */
 function calcTarget() {
+  document.getElementById('target_out').style.display = 'none';
+  const exceptional = exceptionalDiscount('t');
+  if (exceptional === null) return;
   const P  = parseNum(document.getElementById('t_cost').value);
   showBhbComparison('t', document.getElementById('t_cost').value);
   const Z  = parseNum(document.getElementById('t_profit').value);
@@ -591,7 +621,9 @@ function calcTarget() {
   }
 
   const priceNet  = P + Z;            // ciljna neto prodaja
-  const priceM    = priceNet / (1 - R);
+  if (R < 0 || R >= 1) { alert('Remise mora biti između 0% i manje od 100%.'); return; }
+  const beforeExceptional = priceNet + exceptional;
+  const priceM    = beforeExceptional / (1 - R);
   const base      = P * 2;
 
   let M = priceM / base - 1;
@@ -603,6 +635,9 @@ function calcTarget() {
   const vatOut = priceNet * T;
   const vatDiff = vatIn - vatOut;
 
+  document.getElementById('t_beforeExceptional').textContent = euro(beforeExceptional);
+  document.getElementById('t_grossBeforeExceptional').textContent = euro(beforeExceptional * (1 + T));
+  document.getElementById('t_exceptionalValue').textContent = euro(exceptional);
   document.getElementById('t_priceNet').textContent   = euro(priceNet);
   document.getElementById('t_base').textContent       = euro(base);
   document.getElementById('t_margeNeed').textContent  = (M * 100).toFixed(2) + ' %';
@@ -613,7 +648,8 @@ function calcTarget() {
 
   const oldCost = bhbOldCost(P);
   const oldPriceNet = oldCost + Z;
-  const oldMarge = (oldPriceNet / (1 - R)) / (oldCost * 2) - 1;
+  const oldMarge = ((oldPriceNet + exceptional) / (1 - R)) / (oldCost * 2) - 1;
+  document.getElementById('t_oldBeforeExceptional').textContent = euro(oldPriceNet + exceptional);
   document.getElementById('t_oldMarge').textContent = (Math.max(0, oldMarge) * 100).toFixed(2).replace('.', ',') + ' %';
   document.getElementById('t_oldPriceNet').textContent = bhbEuro(oldPriceNet);
   document.getElementById('t_oldPriceGross').textContent = bhbEuro(oldPriceNet * (1 + T));
@@ -653,6 +689,9 @@ function calcPercent() {
 
 /* Kalkulator 4 – NETO profit iz prodajne cijene */
 function calcNetoProfit() {
+  document.getElementById('neto_out').style.display = 'none';
+  const exceptional = exceptionalDiscount('n');
+  if (exceptional === null) return;
   const P  = parseNum(document.getElementById('n_cost').value);
   showBhbComparison('n', document.getElementById('n_cost').value);
   const B  = parseNum(document.getElementById('n_brut').value);
@@ -664,7 +703,9 @@ function calcNetoProfit() {
   }
 
   // NETO prodaja (skidanje TVA sa BRUTO cijene)
-  const net = B / (1 + T);
+  const beforeExceptional = B / (1 + T);
+  if (exceptional > beforeExceptional) { alert('Posebni popust ne može biti veći od NETO prodajne cijene.'); return; }
+  const net = beforeExceptional - exceptional;
 
   // NETO profit
   const profit = net - P;
@@ -674,6 +715,9 @@ function calcNetoProfit() {
   const vatOut = net * T;    // izlazni TVA na prodaju
   const vatDiff = vatIn - vatOut;
 
+  document.getElementById('n_beforeExceptional').textContent = euro(beforeExceptional);
+  document.getElementById('n_exceptionalValue').textContent = euro(exceptional);
+  document.getElementById('n_finalGross').textContent = euro(net * (1 + T));
   document.getElementById('n_net').textContent     = euro(net);
   document.getElementById('n_profit').textContent  = euro(profit);
   document.getElementById('n_vatin').textContent   = euro(vatIn);
@@ -685,41 +729,6 @@ function calcNetoProfit() {
   document.getElementById('n_profitGain').textContent = bhbEuro(oldCost - P);
 
   document.getElementById('neto_out').style.display = 'block';
-}
-
-/* Rabat dobavljača */
-function calcDiscount() {
-  const catalog = parseNum(document.getElementById('d_catalog').value);
-  const oldDiscount = parseNum(document.getElementById('d_oldDiscount').value);
-  const newDiscount = parseNum(document.getElementById('d_newDiscount').value);
-
-  document.getElementById('discount_out').style.display = 'none';
-  if (!Number.isFinite(catalog) || catalog <= 0) {
-    alert('Unesi ispravnu katalošku cijenu.');
-    return;
-  }
-  if (!Number.isFinite(oldDiscount) || !Number.isFinite(newDiscount) ||
-      oldDiscount < 0 || oldDiscount > 100 || newDiscount < 0 || newDiscount > 100) {
-    alert('Unesi stari i novi rabat između 0 i 100%.');
-    return;
-  }
-
-  const oldCost = catalog * (1 - oldDiscount / 100);
-  const newCost = catalog * (1 - newDiscount / 100);
-  const saving = oldCost - newCost;
-  const points = newDiscount - oldDiscount;
-  // Zadrži postojeći euro helper; decimalni zarez koristi samo ovaj tab.
-  const discountEuro = n => euro(n).replace(/\.(\d{2}) €$/, ',$1 €');
-
-  document.getElementById('d_oldCost').textContent = discountEuro(oldCost);
-  document.getElementById('d_newCost').textContent = discountEuro(newCost);
-  document.getElementById('d_saving').textContent = discountEuro(saving);
-  document.getElementById('d_reduction').textContent = oldCost > 0
-    ? ((saving / oldCost) * 100).toFixed(2).replace('.', ',') + ' %'
-    : 'Nije definisano';
-  document.getElementById('d_points').textContent = (points > 0 ? '+' : '') +
-    points.toFixed(2).replace('.', ',') + ' procentnih poena';
-  document.getElementById('discount_out').style.display = 'block';
 }
 
 /* Service worker */
