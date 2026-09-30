@@ -611,7 +611,7 @@ document.querySelectorAll('input').forEach(input => {
     const isMoney = moneyInputs.has(input.id);
     const number = parseNum(input.value, !isMoney);
     if (!Number.isFinite(number)) return;
-    input.value = number.toLocaleString('de-DE', {
+    input.value = number.toLocaleString(input.id === 'f_marge' ? 'en-US' : 'de-DE', {
       minimumFractionDigits: isMoney ? 2 : 0,
       maximumFractionDigits: isMoney ? 2 : 8,
       useGrouping: isMoney
@@ -734,7 +734,7 @@ function calcTarget() {
   document.getElementById('t_exceptionalValue').textContent = euro(exceptional);
   document.getElementById('t_priceNet').textContent   = euro(priceNet);
   document.getElementById('t_base').textContent       = euro(base);
-  document.getElementById('t_margeNeed').textContent  = percent(M * 100);
+  document.getElementById('t_margeNeed').textContent  = (M * 100).toFixed(2) + ' %';
   document.getElementById('t_priceGross').textContent = euro(priceGross);
   document.getElementById('t_vatIn').textContent      = euro(vatIn);
   document.getElementById('t_vatOut').textContent     = euro(vatOut);
@@ -744,7 +744,7 @@ function calcTarget() {
   const oldPriceNet = oldCost + Z;
   const oldMarge = ((oldPriceNet + exceptional) / (1 - R)) / base - 1;
   document.getElementById('t_oldBeforeExceptional').textContent = euro(oldPriceNet + exceptional);
-  document.getElementById('t_oldMarge').textContent = percent(Math.max(0, oldMarge) * 100);
+  document.getElementById('t_oldMarge').textContent = (Math.max(0, oldMarge) * 100).toFixed(2) + ' %';
   document.getElementById('t_oldPriceNet').textContent = bhbEuro(oldPriceNet);
   document.getElementById('t_oldPriceGross').textContent = bhbEuro(oldPriceNet * (1 + T));
   document.getElementById('t_oldWarn').style.display = oldMarge < 0 ? 'block' : 'none';
