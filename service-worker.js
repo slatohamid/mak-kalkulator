@@ -1,4 +1,4 @@
-const CACHE_NAME = "mak-kalkulator-v4";
+const CACHE_NAME = "mak-kalkulator-v5";
 const ASSETS = [
   "./",
   "./index.html",
@@ -29,8 +29,3 @@ self.addEventListener("fetch", evt => {
     caches.match(evt.request).then(resp => resp || fetch(evt.request))
   );
 });
-window.addEventListener('touchstart', function(e) {
-  if (e.touches.length > 1) {
-    e.preventDefault();
-  }
-}, { passive: false });
