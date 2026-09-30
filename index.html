@@ -223,6 +223,7 @@
     <button class="tab active" data-tab="forward">Softver kalkulator</button>
     <button class="tab" data-tab="target">Željena zarada → Marge</button>
     <button class="tab" data-tab="percent">Brzi procenti</button>
+    <button class="tab" data-tab="discount">Rabat dobavljača</button>
     <button class="tab" data-tab="netoprofit">Neto zarada</button>
   </div>
 
@@ -348,6 +349,41 @@
         <div class="row"><span class="label" id="p_lbl3"></span><span class="value" id="p_val3"></span></div>
         <div class="row"><span class="label">Ukupno ova 3 procenta:</span><span class="value" id="p_sum"></span></div>
         <div class="row"><span class="label">Ostatak (baza − zbir):</span><span class="value" id="p_rest"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rabat dobavljača -->
+  <div class="card tab-panel" id="tab-discount" style="display:none;">
+    <span class="badge">Rabat dobavljača</span>
+    <h2>Rabat dobavljača</h2>
+    <p class="desc">Uporedi staru i novu nabavnu cijenu prema rabatu dobavljača.</p>
+
+    <div class="grid-2">
+      <div>
+        <label for="d_catalog">Kataloška cijena (bez TVA)</label>
+        <div class="hint">npr. 10.000,00</div>
+        <input id="d_catalog" type="text" placeholder="npr. 10.000,00">
+
+        <label for="d_oldDiscount">Stari rabat %</label>
+        <input id="d_oldDiscount" type="text" value="50">
+
+        <label for="d_newDiscount">Novi rabat %</label>
+        <input id="d_newDiscount" type="text" value="53">
+
+        <button onclick="calcDiscount()">Izračunaj</button>
+      </div>
+
+      <div id="discount_out" style="display:none;" class="results">
+        <div class="section-title">Nabavne cijene</div>
+        <div class="row"><span class="label">Stara nabavna cijena:</span><span class="value" id="d_oldCost"></span></div>
+        <div class="row"><span class="label">Nova nabavna cijena:</span><span class="value" id="d_newCost"></span></div>
+
+        <div class="section-title">Razlika</div>
+        <div class="row"><span class="label">Ušteda:</span><span class="value" id="d_saving"></span></div>
+        <div class="row"><span class="label">Nova nabavna niža za:</span><span class="value" id="d_reduction"></span></div>
+        <div class="row"><span class="label">Razlika rabata:</span><span class="value" id="d_points"></span></div>
+        <p class="note">Procenat uštede računa se u odnosu na staru nabavnu cijenu. Negativna ušteda znači da je nova nabavna viša. Kada je stara nabavna 0 €, procenat nije definisan.</p>
       </div>
     </div>
   </div>
@@ -575,6 +611,41 @@ function calcNetoProfit() {
   document.getElementById('n_vatdiff').textContent = euro(vatDiff);
 
   document.getElementById('neto_out').style.display = 'block';
+}
+
+/* Rabat dobavljača */
+function calcDiscount() {
+  const catalog = parseNum(document.getElementById('d_catalog').value);
+  const oldDiscount = parseNum(document.getElementById('d_oldDiscount').value);
+  const newDiscount = parseNum(document.getElementById('d_newDiscount').value);
+
+  document.getElementById('discount_out').style.display = 'none';
+  if (!Number.isFinite(catalog) || catalog <= 0) {
+    alert('Unesi ispravnu katalošku cijenu.');
+    return;
+  }
+  if (!Number.isFinite(oldDiscount) || !Number.isFinite(newDiscount) ||
+      oldDiscount < 0 || oldDiscount > 100 || newDiscount < 0 || newDiscount > 100) {
+    alert('Unesi stari i novi rabat između 0 i 100%.');
+    return;
+  }
+
+  const oldCost = catalog * (1 - oldDiscount / 100);
+  const newCost = catalog * (1 - newDiscount / 100);
+  const saving = oldCost - newCost;
+  const points = newDiscount - oldDiscount;
+  // Zadrži postojeći euro helper; decimalni zarez koristi samo ovaj tab.
+  const discountEuro = n => euro(n).replace(/\.(\d{2}) €$/, ',$1 €');
+
+  document.getElementById('d_oldCost').textContent = discountEuro(oldCost);
+  document.getElementById('d_newCost').textContent = discountEuro(newCost);
+  document.getElementById('d_saving').textContent = discountEuro(saving);
+  document.getElementById('d_reduction').textContent = oldCost > 0
+    ? ((saving / oldCost) * 100).toFixed(2).replace('.', ',') + ' %'
+    : 'Nije definisano';
+  document.getElementById('d_points').textContent = (points > 0 ? '+' : '') +
+    points.toFixed(2).replace('.', ',') + ' procentnih poena';
+  document.getElementById('discount_out').style.display = 'block';
 }
 
 /* Service worker */
