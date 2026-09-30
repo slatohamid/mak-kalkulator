@@ -95,7 +95,7 @@
       color: var(--text-muted);
       margin-bottom: 4px;
     }
-    input {
+    input, select {
       width: 100%;
       padding: 8px 10px;
       border-radius: 10px;
@@ -105,7 +105,7 @@
       font-size: 14px;
       outline: none;
     }
-    input:focus {
+    input:focus, select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px rgba(255,123,58,0.4);
     }
@@ -222,7 +222,7 @@
     .card h2 { font-size: 22px; letter-spacing: -0.02em; }
     .card p.desc { margin: 8px 0 20px; line-height: 1.6; }
     label { margin-top: 14px; }
-    input { padding: 12px; border-radius: 12px; font-variant-numeric: tabular-nums; }
+    input, select { padding: 12px; border-radius: 12px; font-variant-numeric: tabular-nums; }
     .row { gap: 16px; padding: 5px 0; align-items: baseline; }
     .row .value { text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0; }
     .section-title { color: #ff9b66; margin-top: 16px; }
@@ -274,6 +274,10 @@
           <p class="note">Za istu katalošku cijenu nova nabavna je 6% niža. Stara nabavna je procjena izvedena iz unesenog iznosa; zaokruživanje BHB stavki može dati malu razliku.</p>
         </div>
 
+        <label for="f_softwareBase">Osnovica BHB — Marge 0%, Remise 0% (bez TVA)</label>
+        <div class="hint">Unesi „Prix brut“ iz iste ponude kada su Marge i svi Remise na 0%. Ovo nije nabavna ×2.</div>
+        <input id="f_softwareBase" type="text" inputmode="decimal" placeholder="npr. 9.505,15">
+
         <label>Marge %</label>
         <input id="f_marge" type="text" placeholder="npr. 10">
 
@@ -286,9 +290,14 @@
         <label>Remise 3 %</label>
         <input id="f_remise3" type="text" value="0">
 
-        <label for="f_exceptional">Remise exceptionnelle — NETO (€)</label>
-        <div class="hint">Fiksni popust bez TVA, npr. 300 €. Ako ga nema, ostavi 0.</div>
+        <label for="f_exceptional">Remise exceptionnelle (€)</label>
+        <div class="hint">Odaberi da li je popust NETO ili s TVA. Za 300 € popusta na konačnu cijenu odaberi BRUTO.</div>
         <input id="f_exceptional" type="text" inputmode="decimal" value="0">
+        <label for="f_exceptionalType">Iznos posebnog popusta je</label>
+        <select id="f_exceptionalType">
+          <option value="gross">BRUTO — s TVA</option>
+          <option value="net">NETO — bez TVA</option>
+        </select>
 
         <label>TVA %</label>
         <input id="f_tva" type="text" value="6">
@@ -298,7 +307,7 @@
 
       <div id="forward_out" style="display:none;" class="results">
         <div class="section-title">NETO cijene</div>
-        <div class="row"><span class="label">Osnovna (×2):</span><span class="value" id="f_base"></span></div>
+        <div class="row"><span class="label">Osnovica BHB (bez TVA):</span><span class="value" id="f_base"></span></div>
         <div class="row"><span class="label">Nakon Marge:</span><span class="value" id="f_afterMarge"></span></div>
         <div class="row"><span class="label">Nakon procentualnih Remise:</span><span class="value" id="f_net"></span></div>
 
@@ -336,15 +345,24 @@
           <p class="note">Za istu katalošku cijenu nova nabavna je 6% niža. Stara nabavna je procjena izvedena iz unesenog iznosa; zaokruživanje BHB stavki može dati malu razliku.</p>
         </div>
 
+        <label for="t_softwareBase">Osnovica BHB — Marge 0%, Remise 0% (bez TVA)</label>
+        <div class="hint">Unesi „Prix brut“ iz iste ponude kada su Marge i svi Remise na 0%. Ovo nije nabavna ×2.</div>
+        <input id="t_softwareBase" type="text" inputmode="decimal" placeholder="npr. 9.505,15">
+
         <label>Željena NETO zarada</label>
         <input id="t_profit" type="text" placeholder="npr. 1.500,00">
 
         <label>Remise %</label>
         <input id="t_remise" type="text" placeholder="npr. 10">
 
-        <label for="t_exceptional">Remise exceptionnelle — NETO (€)</label>
-        <div class="hint">Fiksni popust bez TVA, npr. 300 €. Ako ga nema, ostavi 0.</div>
+        <label for="t_exceptional">Remise exceptionnelle (€)</label>
+        <div class="hint">Odaberi da li je popust NETO ili s TVA. Za 300 € popusta na konačnu cijenu odaberi BRUTO.</div>
         <input id="t_exceptional" type="text" inputmode="decimal" value="0">
+        <label for="t_exceptionalType">Iznos posebnog popusta je</label>
+        <select id="t_exceptionalType">
+          <option value="gross">BRUTO — s TVA</option>
+          <option value="net">NETO — bez TVA</option>
+        </select>
 
         <label>TVA % prodaja</label>
         <input id="t_tva" type="text" value="6">
@@ -355,13 +373,18 @@
       <div id="target_out" style="display:none;" class="results">
         <div class="section-title">Cijena za ponudu</div>
         <div class="row highlight"><span class="label">Upiši NETO prije posebnog popusta:</span><span class="value" id="t_beforeExceptional"></span></div>
+        <div class="row"><span class="label">NETO prije svih popusta:</span><span class="value" id="t_beforeAllDiscounts"></span></div>
         <div class="row"><span class="label">BRUTO prije posebnog popusta:</span><span class="value" id="t_grossBeforeExceptional"></span></div>
         <div class="row"><span class="label">Remise exceptionnelle NETO:</span><span class="value" id="t_exceptionalValue"></span></div>
         <p class="note">Cijena za unos je nakon procentualnog Remise, a prije Remise exceptionnelle. Potrebna Marge uključuje oba popusta da nakon njih ostane željena zarada.</p>
         <div class="section-title">Nakon svih popusta (rabat 53%)</div>
         <div class="row"><span class="label">Potrebna NETO prodajna cijena:</span><span class="value" id="t_priceNet"></span></div>
-        <div class="row"><span class="label">Osnovna cijena (×2):</span><span class="value" id="t_base"></span></div>
+        <div class="row"><span class="label">Osnovica BHB (bez TVA):</span><span class="value" id="t_base"></span></div>
         <div class="row"><span class="label">Potrebna Marge %:</span><span class="value" id="t_margeNeed"></span></div>
+
+        <p class="note">Softver prima Marge na dvije decimale. Ispod je očekivani rezultat s prikazanom, zaokruženom Marge.</p>
+        <div class="row"><span class="label">Zarada s prikazanom Marge:</span><span class="value" id="t_roundedProfit"></span></div>
+        <div class="row"><span class="label">Konačna BRUTO s tom Marge:</span><span class="value" id="t_roundedGross"></span></div>
 
         <div class="section-title">Cijena sa TVA</div>
         <div class="row"><span class="label">Prodajna BRUTO (sa TVA):</span><span class="value" id="t_priceGross"></span></div>
@@ -371,7 +394,7 @@
         <div class="row"><span class="label">Potrebna Marge prije:</span><span class="value" id="t_oldMarge"></span></div>
         <div class="row"><span class="label">NETO prodajna prije:</span><span class="value" id="t_oldPriceNet"></span></div>
         <div class="row"><span class="label">BRUTO prodajna prije:</span><span class="value" id="t_oldPriceGross"></span></div>
-        <p class="note">Oba slučaja koriste istu željenu zaradu, oba popusta i TVA. Marge se računa prema nabavnoj u tom slučaju.</p>
+        <p class="note">Oba slučaja koriste istu BHB osnovicu, željenu zaradu, oba popusta i TVA. Mijenja se samo nabavna cijena.</p>
         <p class="warning" id="t_oldWarn" style="display:none;">Potrebna Marge prije je negativna; prikazan je minimum 0%, kao u postojećem obračunu.</p>
 
         <div class="section-title">TVA tokovi (informativno)</div>
@@ -450,9 +473,14 @@
         <div class="hint">Unesi cijenu sa TVA nakon procentualnih popusta. Posebni NETO popust skida se u ovom obračunu.</div>
         <input id="n_brut" type="text" placeholder="npr. 3.000,00">
 
-        <label for="n_exceptional">Remise exceptionnelle — NETO (€)</label>
-        <div class="hint">Fiksni popust bez TVA, npr. 300 €. Ako ga nema, ostavi 0.</div>
+        <label for="n_exceptional">Remise exceptionnelle (€)</label>
+        <div class="hint">Odaberi da li je popust NETO ili s TVA. Za 300 € popusta na konačnu cijenu odaberi BRUTO.</div>
         <input id="n_exceptional" type="text" inputmode="decimal" value="0">
+        <label for="n_exceptionalType">Iznos posebnog popusta je</label>
+        <select id="n_exceptionalType">
+          <option value="gross">BRUTO — s TVA</option>
+          <option value="net">NETO — bez TVA</option>
+        </select>
 
         <label>Prodajni TVA %</label>
         <input id="n_tva" type="text" value="6">
@@ -575,7 +603,7 @@ function showBhbComparison(prefix, value) {
 }
 
 /* Ujednači unos nakon izlaska iz polja. */
-const moneyInputs = new Set(['f_cost', 't_cost', 't_profit', 'p_base', 'n_cost', 'n_brut', 'f_exceptional', 't_exceptional', 'n_exceptional']);
+const moneyInputs = new Set(['f_cost', 't_cost', 't_profit', 'p_base', 'n_cost', 'n_brut', 'f_exceptional', 't_exceptional', 'n_exceptional', 'f_softwareBase', 't_softwareBase']);
 document.querySelectorAll('input').forEach(input => {
   input.inputMode = 'decimal';
   input.addEventListener('blur', () => {
@@ -610,7 +638,25 @@ function exceptionalDiscount(prefix) {
     alert('Remise exceptionnelle mora biti ispravan iznos od 0 € ili više.');
     return null;
   }
-  return amount;
+  const vatValue = document.getElementById(prefix + '_tva').value.trim();
+  const vat = vatValue === '' ? 0 : parseNum(vatValue, true);
+  if (!Number.isFinite(vat) || vat < 0) {
+    alert('Unesi ispravan TVA procenat od 0% ili više.');
+    return null;
+  }
+  // Popust na konačnu BRUTO cijenu pretvori u NETO iznos iz ponude.
+  return document.getElementById(prefix + '_exceptionalType').value === 'gross'
+    ? Math.round((amount / (1 + vat / 100) + Number.EPSILON) * 100) / 100
+    : amount;
+}
+
+function softwareBase(prefix) {
+  const base = parseNum(document.getElementById(prefix + '_softwareBase').value);
+  if (!Number.isFinite(base) || base <= 0) {
+    alert('Unesi osnovicu BHB bez TVA za Marge 0% i sve Remise 0%.');
+    return null;
+  }
+  return base;
 }
 
 /* Kalkulator 1 */
@@ -628,7 +674,8 @@ function calcForward() {
 
   if (!P || P <= 0) { alert('Unesi nabavnu NETO.'); return; }
 
-  const base       = P * 2;
+  const base = softwareBase('f');
+  if (base === null) return;
   const afterMarge = base * (1 + M);
   const net        = afterMarge * (1 - R1) * (1 - R2) * (1 - R3);
   if (exceptional > net) { alert('Posebni popust ne može biti veći od NETO prodajne cijene.'); return; }
@@ -669,7 +716,8 @@ function calcTarget() {
   if (R < 0 || R >= 1) { alert('Remise mora biti između 0% i manje od 100%.'); return; }
   const beforeExceptional = priceNet + exceptional;
   const priceM    = beforeExceptional / (1 - R);
-  const base      = P * 2;
+  const base = softwareBase('t');
+  if (base === null) return;
 
   let M = priceM / base - 1;
   let negative = false;
@@ -680,6 +728,7 @@ function calcTarget() {
   const vatOut = priceNet * T;
   const vatDiff = vatIn - vatOut;
 
+  document.getElementById('t_beforeAllDiscounts').textContent = euro(priceM);
   document.getElementById('t_beforeExceptional').textContent = euro(beforeExceptional);
   document.getElementById('t_grossBeforeExceptional').textContent = euro(beforeExceptional * (1 + T));
   document.getElementById('t_exceptionalValue').textContent = euro(exceptional);
@@ -693,12 +742,19 @@ function calcTarget() {
 
   const oldCost = bhbOldCost(P);
   const oldPriceNet = oldCost + Z;
-  const oldMarge = ((oldPriceNet + exceptional) / (1 - R)) / (oldCost * 2) - 1;
+  const oldMarge = ((oldPriceNet + exceptional) / (1 - R)) / base - 1;
   document.getElementById('t_oldBeforeExceptional').textContent = euro(oldPriceNet + exceptional);
   document.getElementById('t_oldMarge').textContent = percent(Math.max(0, oldMarge) * 100);
   document.getElementById('t_oldPriceNet').textContent = bhbEuro(oldPriceNet);
   document.getElementById('t_oldPriceGross').textContent = bhbEuro(oldPriceNet * (1 + T));
   document.getElementById('t_oldWarn').style.display = oldMarge < 0 ? 'block' : 'none';
+
+  const roundedMarge = Math.round(M * 10000) / 10000;
+  const roundMoney = n => Math.round((n + Number.EPSILON) * 100) / 100;
+  const roundedBeforeRemise = roundMoney(base * (1 + roundedMarge));
+  const roundedFinalNet = roundMoney(roundedBeforeRemise * (1 - R)) - exceptional;
+  document.getElementById('t_roundedProfit').textContent = euro(roundedFinalNet - P);
+  document.getElementById('t_roundedGross').textContent = euro(roundedFinalNet * (1 + T));
 
   document.getElementById('t_warn').style.display = negative ? 'block' : 'none';
   document.getElementById('target_out').style.display = 'block';
