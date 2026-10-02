@@ -484,9 +484,13 @@
           <p class="note">Stara nabavna = BHB osnovica × 50%, ako je ranije sve imalo rabat 50%. Nova je tvoj stvarni BHB iznos, s različitim rabatima po stavkama.</p>
         </div>
 
-        <label for="n_softwareBase">BHB osnovica bez TVA (opcionalno, za poređenje)</label>
-        <div class="hint">Prix brut s Marge 0% i svim Remise 0%. Bez ovog unosa računa se samo stvarna zarada.</div>
+        <label for="n_softwareBase">BHB osnovica bez TVA (za Marge i poređenje)</label>
+        <div class="hint">Prix brut s Marge 0% i svim Remise 0%. Bez ovog unosa računa se zarada, ali ne i potrebna Marge.</div>
         <input id="n_softwareBase" type="text" placeholder="npr. 9.505,00" oninput="showBhbComparison('n', document.getElementById('n_cost').value)">
+
+        <label for="n_remise">Remise % u BHB softveru</label>
+        <div class="hint">Unesi procentualni popust koji koristiš u BHB-u. Ako ga nema, ostavi 0.</div>
+        <input id="n_remise" type="text" inputmode="decimal" value="0">
 
         <label for="n_brut">Prodajna BRUTO prije Remise exceptionnelle</label>
         <div class="hint">Unesi cijenu sa TVA nakon procentualnih popusta. Posebni NETO popust skida se u ovom obračunu.</div>
@@ -508,6 +512,8 @@
       </div>
 
       <div id="neto_out" style="display:none;" class="results">
+        <div class="row highlight"><span class="label">Marge za BHB softver:</span><span class="value" id="n_margeNeed"></span></div>
+        <p class="note" id="n_margeNote">Za izračun Marge unesi BHB osnovicu i Remise %.</p>
         <div class="section-title">Cijena nakon posebnog popusta</div>
         <div class="row"><span class="label">NETO prije posebnog popusta:</span><span class="value" id="n_beforeExceptional"></span></div>
         <div class="row"><span class="label">Remise exceptionnelle NETO:</span><span class="value" id="n_exceptionalValue"></span></div>
@@ -833,6 +839,9 @@ function calcNetoProfit() {
   const P  = parseNum(document.getElementById('n_cost').value);
   showBhbComparison('n', document.getElementById('n_cost').value);
   const B  = parseNum(document.getElementById('n_brut').value);
+  const remiseText = document.getElementById('n_remise').value.trim();
+  const R = remiseText === '' ? 0 : parseNum(remiseText, true) / 100;
+  if (!Number.isFinite(R) || R < 0 || R >= 1) { alert('Remise mora biti između 0% i manje od 100%.'); return; }
   const T  = parseNum(document.getElementById('n_tva').value, true) / 100 || 0;
 
   if (!P || !B || P <= 0 || B <= 0) {
@@ -863,6 +872,15 @@ function calcNetoProfit() {
   document.getElementById('n_vatdiff').textContent = euro(vatDiff);
 
   const oldBase = parseNum(document.getElementById('n_softwareBase').value);
+  const hasBase = Number.isFinite(oldBase) && oldBase > 0;
+  const neededMarge = hasBase ? beforeExceptional / (1 - R) / oldBase - 1 : NaN;
+  document.getElementById('n_margeNeed').textContent = hasBase
+    ? (neededMarge * 100).toFixed(2) + ' %' : 'Unesi BHB osnovicu';
+  document.getElementById('n_margeNote').textContent = !hasBase
+    ? 'Za izračun Marge unesi BHB osnovicu i Remise %.'
+    : neededMarge < 0
+      ? 'Za ovu cijenu potrebna je negativna Marge. Ako BHB prihvata minimum 0%, povećaj Remise ili prilagodi cijenu; 0% ne daje ovaj rezultat.'
+      : 'Marge je za unesenu BRUTO cijenu prije posebnog popusta i uneseni Remise. Posebni popust primijeni dodatno. Zaokruživanje Marge i BHB stavki može dati razliku od nekoliko centi.';
   const oldCost = bhbOldCost(oldBase);
   const hasOldCost = Number.isFinite(oldCost) && oldCost > 0;
   document.getElementById('n_oldProfit').textContent = hasOldCost ? bhbEuro(net - oldCost) : 'Unesi BHB osnovicu';
