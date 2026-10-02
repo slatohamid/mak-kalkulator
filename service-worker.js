@@ -1,4 +1,4 @@
-const CACHE_NAME = "mak-kalkulator-v10";
+const CACHE_NAME = "mak-kalkulator-v11";
 const ASSETS = [
   "./",
   "./index.html",
