@@ -527,6 +527,10 @@
         <div class="row"><span class="label">Veća zarada sada:</span><span class="value" id="n_profitGain"></span></div>
         <p class="note">Poređenje zarade koristi istu prodajnu cijenu i isti posebni popust u oba slučaja.</p>
 
+        <div class="section-title">Cijena sa starim rabatom 50% — ista zarada</div>
+        <div class="row highlight"><span class="label">Konačna BRUTO za kupca prije (50%):</span><span class="value" id="n_oldSameProfitGross"></span></div>
+        <p class="note">Stara nabavna (BHB osnovica × 50%) + ista NETO zarada kao sada, zatim TVA. Isti Remise i posebni popust; prikazana cijena je nakon svih popusta.</p>
+
         <div class="section-title">TVA tokovi</div>
         <div class="row"><span class="label">Ulazni TVA (21%):</span><span class="value" id="n_vatin"></span></div>
         <div class="row"><span class="label">Izlazni TVA (prodaja):</span><span class="value" id="n_vatout"></span></div>
@@ -885,6 +889,8 @@ function calcNetoProfit() {
   const hasOldCost = Number.isFinite(oldCost) && oldCost > 0;
   document.getElementById('n_oldProfit').textContent = hasOldCost ? bhbEuro(net - oldCost) : 'Unesi BHB osnovicu';
   document.getElementById('n_profitGain').textContent = hasOldCost ? bhbEuro(oldCost - P) : 'Unesi BHB osnovicu';
+  document.getElementById('n_oldSameProfitGross').textContent = hasOldCost
+    ? bhbEuro((oldCost + profit) * (1 + T)) : 'Unesi BHB osnovicu';
 
   document.getElementById('neto_out').style.display = 'block';
 }
